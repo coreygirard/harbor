@@ -6,80 +6,177 @@ def loadFile(filename):
     with open(filename,'r') as f:
         text = []
         for line in f:
-            processed = line.strip('\n').strip()
-            if processed != '':
+            processed = line.strip('\n')
+            if processed.strip() != '':
                 text.append(processed)
     return text
+
+def makePath(line):
+    line = line.strip('harbor: ')
+    return line.split('/')
+
+def extractBlockComments(text):
+    groups = []
+    indent = None
+    buff = []
+    for line in text:
+        if line.strip() == "'''" and indent != None:
+            indent = None
+            groups.append(buff)
+            buff = []
+        elif line.strip() == "'''" and indent == None:
+            indent = len(line) - len(line.strip())
+        elif indent != None:
+            buff += [line[indent:]]
+    return groups
+
+def getOnlyHarborMarkup(groups):
+    text = []
+    for g in groups:
+        if g[0].startswith('harbor: '):
+            text += g
+
+    groups = []
+    t = 0
+    buff = []
+    while len(text) > 0:
+        t = 1
+        while not (t >= len(text) or text[t].startswith('harbor: ')):
+            t += 1
+
+        groups.append(text[:t])
+        del text[:t]
+
+    return groups
 
 def getDocs(filename):
     text = loadFile(filename)
 
-    groups = []
-    flag = False
-    buff = []
-    for line in text:
-        if line == "'''" and flag:
-            flag = False
-            groups.append(buff)
-            buff = []
-        elif line == "'''" and not flag:
-            flag = True
-        elif flag:
-            buff += [line]
+    groups = extractBlockComments(text)
+    groups = getOnlyHarborMarkup(groups)
 
-    temp = []
-    for e in groups:
-        if e[0].startswith('harbor: '):
-            temp.append((e[0].strip('harbor: '),e[1:]))
+    temp = {}
+    for g in groups:
+        path = makePath(g[0])
+        filepath = path[0]
+        if filepath not in temp:
+            temp[filepath] = {}
+        path = '/'.join(path)
+
+        data = g[1:]
+        temp[filepath][path] = temp[filepath].get(path,[])+data
+
     return temp
 
-def getPattern(filename):
+def getPatterns(filename):
     text = loadFile(filename)
-    d = {}
+    assert('PATTERNS' in text)
+    text = text[text.index('PATTERNS')+1:]
+
+
+
+    d = []
 
     while len(text) > 0:
-        d[text[0].strip(':')] = text[1]
-        del text[:2]
+        if len(text[0]) < 4 or text[0][:4] != ' '*4:
+            d.append([text[0].strip(':'),[]])
+        else:
+            d[-1][1].append(text[0][4:])
+        del text[0]
+
+    d = {e[0]:'\n'.join(e[1]) for e in d}
 
     return d
 
-def parse(doc,pattern):
-    for i in range(len(doc)):
-        line = doc[i]
-        s = re.split(r'(\{.*?\}\[.*?\])',line)
+def getOutline(filename):
+    text = loadFile(filename)
+    assert('OUTLINE' in text)
+    assert('PATTERNS' in text)
+    text = text[text.index('OUTLINE')+1:text.index('PATTERNS')]
 
-        for j in range(len(s)):
-            w = s[j]
-            match = re.fullmatch(r'\{(.*?)\}\[(.*?)\]',w)
-            if match:
-                fromStr,lookup = match.groups()
-                if lookup in pattern:
-                    toStr = re.sub('{'+lookup+'}',fromStr,pattern[lookup])
-                    s[j] = toStr
+    filenames = {}
 
-        doc[i] = ''.join(s)
+    d = {}
+    for line in text:
+        if line.strip() != '':
+            n,line = len(line)-len(line.strip()),line.strip()
+            assert(n%2 == 0)
 
-    return '\n'.join(doc)
+            if n == 0:
+                slug,f = line.split(' ')
+                slug = slug.strip(':')
+                filenames[slug] = {'filename':f,
+                                   'contents':[]}
+                line = slug
 
-def makeDocs(sourceFile,patternFile):
-    groups = getDocs('example.py')
-    docFile = {}
-    for dest,group in groups:
-        docFile[dest] = docFile.get(dest,[]) + [group]
+            d[n] = line
+            d = {k:v for k,v in d.items() if k <= n}
+            path = '/'.join([d[k] for k in sorted(d.keys())])
+            filenames[slug]['contents'] += [path]
 
-    pattern = getPattern('example.harbor')
+    return filenames
 
-    for filename,notes in docFile.items():
-        final = []
-        for note in notes:
-            final.append(parse(note,pattern))
+def parse(line,pattern):
+    s = re.split(r'(\{.*?\}\[.*?\])',line)
 
-        final = '\n'.join(final)
+    temp = []
+    for w in s:
+        match = re.fullmatch(r'\{(.*?)\}\[(.*?)\]',w)
+        if match:
+            fromStr,lookup = match.groups()
+            if lookup in pattern:
+                toStr = re.sub('{'+lookup+'}',fromStr,pattern[lookup])
+                temp.append(toStr)
+            else:
+                temp.append(w)
+        else:
+            temp.append(w)
 
-        with open(filename,'w') as f:
-            f.write(final)
+    return ''.join(temp)
 
+def atomicSub(group,patterns):
+    return [parse(g,patterns) for g in group]
 
-makeDocs('example.py', 'example.harbor')
+def sub(groups,patterns):
+    for f in groups.keys():
+        for path in groups[f].keys():
+            groups[f][path] = atomicSub(groups[f][path],patterns)
+            groups[f][path] = '\n'.join(groups[f][path])
+    return groups
+
+def makeDocs(sourceFile,patternFile,debug=False):
+    groups = getDocs(sourceFile)
+
+    outline = getOutline(patternFile)
+    patterns = getPatterns(patternFile)
+
+    groups = sub(groups,patterns)
+
+    #pprint(groups)
+    #pprint(outline)
+    #pprint(patterns)
+
+    assert(all([k in outline for k in groups.keys()]))
+    for doc in outline.keys():
+        filepath = outline[doc]['filename']
+
+        docGroups = groups[doc]
+        docOutline = outline[doc]['contents']
+
+        if debug:
+            print(filepath+':')
+            for path in docOutline:
+                if path in docGroups:
+                    print(path)
+                    print(docGroups[path])
+                    print(' ')
+            print('-----------------------\n')
+        else:
+            with open(filepath,'w') as f:
+                for path in docOutline:
+                    if path in docGroups:
+                        f.write(docGroups[path])
+
+makeDocs('example.py', 'example.harbor', debug=True)
 
 

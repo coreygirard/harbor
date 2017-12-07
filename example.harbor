@@ -1,2 +1,26 @@
+OUTLINE
+
+quickstart: example_quickstart.md
+  basic
+    install
+    use
+
+  intermediate
+
+spec: example_specification.md
+  objects
+    small
+    large
+
+  methods
+    simple
+    complex
+
+
+PATTERNS
+
 function:
-- **`{function}()`**
+    - **`{function}()`**
+
+member_function:
+    - **`.{member_function}()`**
