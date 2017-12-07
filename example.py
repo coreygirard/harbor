@@ -1,5 +1,146 @@
 import re
 
+
+
+
+
+
+
+'''
+harbor: example.md
+{delusiveSinew}[function]
+'''
+def delusiveSinew():
+    '''
+    >>> delusiveSinew()
+    '''
+
+
+'''
+harbor: example.md
+{curlicueGlyph}[function]
+'''
+def curlicueGlyph():
+    '''
+    >>> curlicueGlyph()
+    '''
+
+
+'''
+harbor: example.md
+{seekRadiance}[function]
+'''
+def seekRadiance():
+    '''
+    >>> seekRadiance()
+    '''
+
+
+'''
+harbor: example.md
+{tolerateRose}[function]
+'''
+def tolerateRose():
+    '''
+    >>> tolerateRose()
+    '''
+
+
+'''
+harbor: example.md
+{errantNode}[function]
+'''
+def errantNode():
+    '''
+    >>> errantNode()
+    '''
+
+
+'''
+harbor: example.md
+{coerciveTwilight}[function]
+'''
+def coerciveTwilight():
+    '''
+    >>> coerciveTwilight()
+    '''
+
+
+'''
+harbor: example.md
+{itemizedDensity}[function]
+'''
+def itemizedDensity():
+    '''
+    >>> itemizedDensity()
+    '''
+
+
+'''
+harbor: example.md
+{deignTarragon}[function]
+'''
+def deignTarragon():
+    '''
+    >>> deignTarragon()
+    '''
+
+
+'''
+harbor: example.md
+{freshThane}[function]
+'''
+def freshThane():
+    '''
+    >>> freshThane()
+    '''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
+boggleEffector
+delusiveSinew
+curlicueGlyph
+seekRadiance
+blanchHulk
+tolerateRose
+errantNode
+honeyedAntithesis
+pulpRoadwork
+coerciveTwilight
+activistAirboat
+appeaseImmobile
+itemizedDensity
+deignTarragon
+freshThane
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 '''
 harbor: example.md
 {makeUrl}[function] converts the relative Wikipedia link to an absolute URL
@@ -155,7 +296,7 @@ def extractLinks(page):
     return links
 
 '''
-harbor: example.md
+harbor: example2.md
 {splitIntoSentences}[function] takes a string as input and splits it into a list of strings
 '''
 def splitIntoSentences(text):

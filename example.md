@@ -1,4 +1,0 @@
-- **`makeUrl()`** converts the relative Wikipedia link to an absolute URL
-- **`splitIntoSentences()`** takes a string as input and splits it into a list of strings
-- **`splitIntoWords()`**
-- **`splitText()`**

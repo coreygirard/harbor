@@ -44,7 +44,6 @@ def getPattern(filename):
     return d
 
 def parse(doc,pattern):
-
     for i in range(len(doc)):
         line = doc[i]
         s = re.split(r'(\{.*?\}\[.*?\])',line)
@@ -55,10 +54,8 @@ def parse(doc,pattern):
             if match:
                 fromStr,lookup = match.groups()
                 if lookup in pattern:
-                    #print(fromStr,lookup,pattern[lookup])
                     toStr = re.sub('{'+lookup+'}',fromStr,pattern[lookup])
                     s[j] = toStr
-                    #print(toStr)
 
         doc[i] = ''.join(s)
 
@@ -78,6 +75,7 @@ def makeDocs(sourceFile,patternFile):
             final.append(parse(note,pattern))
 
         final = '\n'.join(final)
+
         with open(filename,'w') as f:
             f.write(final)
 
