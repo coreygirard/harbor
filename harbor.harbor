@@ -1,0 +1,18 @@
+OUTLINE
+readme: README.md
+  badges
+  what
+  why
+  how
+
+
+PATTERNS
+
+buildbadge:
+    [![Build Status](https://travis-ci.org/crgirard/{buildbadge}.svg?branch=master)](https://travis-ci.org/crgirard/{buildbadge})
+codecovbadge:
+    [![Codecov](https://img.shields.io/codecov/c/github/crgirard/{codecovbadge}.svg)](https://codecov.io/gh/crgirard/{codecovbadge}/)
+title:
+    # {title}
+section:
+    ### {section}
