@@ -1,35 +1,32 @@
 from pprint import pprint
 import re
 
-'''
-harbor: readme/todo
+'''harbor: readme/todo
 
 {TODO}[section]
 
 [ ] Allow multiple inputs to text replacement macros
 [ ] Clean output to be even more human- readable/editable
+[ ] Handle multi-line inputs to macros
 [ ] REFACTOR
 '''
 
 
 
-'''
-harbor: readme
+'''harbor: readme
 
 {harbor}[title]
 *docs made simple*
 '''
 
 
-'''
-harbor: readme/badges
+'''harbor: readme/badges
 
 {harbor}[buildbadge]
 {harbor}[codecovbadge]
 '''
 
-'''
-harbor: readme/what
+'''harbor: readme/what
 
 **Harbor**
 1. *(noun)* A place of shelter
@@ -43,8 +40,7 @@ something nice and simple for small projects, that reads straight from the sourc
 code, makes as few assumptions as possible, and outputs plain Markdown files.
 '''
 
-'''
-harbor: readme/why
+'''harbor: readme/why
 
 {Why}[section]
 **Harbor** aims to be a minimalist generator of fine Markdown documentation.
@@ -62,36 +58,48 @@ could conceivably generate HTML.*
 - **Favor flexibility over power:** *The small convenience gained by auto-detecting
 which class or function definitions a given docs section is near is far outweighed by the loss
 of potential layout options or non-standard formatting choices*
-
+- **Favor clarity over speed:** *The purpose here is mainly to provide ease of use. Simple rules,
+easily remembered, beat clever tricks that squeeze a few microseconds out of compile time. At least
+in this use case. Harbor is for when you value your own time above computation time.*
 '''
 
 def loadFile(filename):
     with open(filename,'r') as f:
-        text = []
-        for line in f:
-            processed = line.strip('\n')
-            #if processed.strip() != '':
-            text.append(processed)
-    return text
+        return f.read().split('\n')
 
-def makePath(line):
+def parsePath(line):
     '''
-    >>> makePath('harbor: abc/def/ghi')
-    ['abc', 'def', 'ghi']
+    >>> parsePath('harbor: abc/def/ghi')
+    ('abc', 'abc/def/ghi')
     '''
     assert(line.startswith('harbor: '))
-    line = line[len('harbor: '):].strip()
-    return line.split('/')
+    line = line[len('harbor: '):]
+    line = line.strip()
+    line = line.split('/')
+    return line[0],'/'.join(line)
 
-def extractBlockComments(text):
+def extractComments(text):
+    """
+    >>> source = ["",
+    ...           "'''harbor: readme",
+    ...           "aaa",
+    ...           "'''",
+    ...           "bbb",
+    ...           "'''",
+    ...           "ccc",
+    ...           "'''"]
+    >>> extractComments(source)
+    [['harbor: readme', 'aaa'], ['', 'ccc']]
+    """
     groups = []
     indent = None
     buff = []
     comment = None
     for line in text:
-        if line.strip() in ["'''",'"""'] and indent == None:
-            indent = len(line) - len(line.strip())
-            comment = line.strip()
+        if (line.lstrip())[:3] in ["'''",'"""'] and indent == None:
+            indent = len(line) - len(line.lstrip())
+            comment = (line.lstrip())[:3]
+            buff = [line[indent+3:]]
         elif line.strip() == comment and indent != None:
             indent = None
             groups.append(buff)
@@ -100,26 +108,21 @@ def extractBlockComments(text):
             buff += [line[indent:]]
     return groups
 
-def getOnlyHarborMarkup(groups):
+def extractMarkup(groups):
+    '''
+    >>> groups = [['harbor: readme', 'aaa'], ['', 'bbb'], ['harbor: readme', 'ccc']]
+    >>> extractMarkup(groups)
+    [['harbor: readme', 'aaa'], ['harbor: readme', 'ccc']]
+    '''
+
     text = []
     for g in groups:
         if g[0].startswith('harbor: '):
-            text += g
+            text += [g]
 
-    groups = []
-    t = 0
-    buff = []
-    while len(text) > 0:
-        t = 1
-        while not (t >= len(text) or text[t].startswith('harbor: ')):
-            t += 1
+    return text
 
-        groups.append(text[:t])
-        del text[:t]
-
-    return groups
-
-def getDocs(filename):
+def getDocs2(filename):
     text = loadFile(filename)
 
     groups = extractBlockComments(text)
@@ -143,9 +146,27 @@ harbor: readme/how/pattern
 The `PATTERN` section specifies essentially macros to be executed on all generated documentation.
 '''
 
-def extractPatternSection(text):
+def extractPatterns(text):
+    '''
+    >>> text = ['OUTLINE',
+    ...         'aaa',
+    ...         'bbb',
+    ...         'ccc',
+    ...         '',
+    ...          'PATTERNS',
+    ...         'ddd',
+    ...         'eee',
+    ...         'fff',
+    ...         '']
+
+    >>> extractPatterns(text)
+    ['ddd', 'eee', 'fff', '']
+    '''
     assert('PATTERNS' in text)
-    return text[text.index('PATTERNS')+1:]
+    text = text[text.index('PATTERNS')+1:]
+    if 'OUTLINE' in text:
+        text = text[:text.index('OUTLINE')]
+    return text
 
 '''
 harbor: readme/how/pattern
@@ -153,20 +174,50 @@ harbor: readme/how/pattern
 Format is
 '''
 
-def getPatterns(filename):
-    text = loadFile(filename)
-    text = extractPatternSection(text)
+def parsePatterns(text):
+    r'''
+    >>> text = ['aaa:',
+    ...         '    **{aaa}**',
+    ...         '',
+    ...         'bbb:',
+    ...         '    ## {bbb}',
+    ...         '    *{bbb}*',
+    ...         '',
+    ...         'ccc:',
+    ...         '    ### {ccc}',
+    ...         '',
+    ...         '    **{ccc}**',
+    ...         '']
+    >>> expected = {'aaa': '**{aaa}**\n',
+    ...             'bbb': '## {bbb}\n*{bbb}*\n',
+    ...             'ccc': '### {ccc}\n\n**{ccc}**\n'}
+    >>> result = parsePatterns(text)
+    >>> result == expected
+    True
+    '''
+
+    while text[0] == '':
+        text.pop(0)
 
     d = []
 
     while len(text) > 0:
-        if len(text[0]) < 4 or text[0][:4] != ' '*4:
-            d.append([text[0].strip(':'),[]])
+        head = text.pop(0)
+        if head.strip() == '':
+            divider = False
+        elif len(head) < 4:
+            divider = True
+        elif head[:4] != ' '*4:
+            divider = True
         else:
-            d[-1][1].append(text[0][4:])
-        del text[0]
+            divider = False
 
-    d = {e[0]:'\n'.join(e[1]) for e in d}
+        if divider:
+            d.append([head.strip(':'),[]])
+        else:
+            d[-1][1].append(head[4:])
+
+    d = {e[0]:'\n'.join(e[1]) for e in d if e[0]}
 
     return d
 
@@ -181,10 +232,27 @@ by those headers, in all-caps, and must be in that order. The `OUTLINE` section 
 the names of the files to be generated, and their internal structure.
 '''
 
-def extractOutlineSection(text):
+def extractOutline(text):
+    '''
+    >>> text = ['OUTLINE',
+    ...         'aaa',
+    ...         'bbb',
+    ...         'ccc',
+    ...         '',
+    ...          'PATTERNS',
+    ...         'ddd',
+    ...         'eee',
+    ...         'fff',
+    ...         '']
+
+    >>> extractOutline(text)
+    ['aaa', 'bbb', 'ccc', '']
+    '''
     assert('OUTLINE' in text)
-    assert('PATTERNS' in text)
-    return text[text.index('OUTLINE')+1:text.index('PATTERNS')]
+    text = text[text.index('OUTLINE')+1:]
+    if 'PATTERNS' in text:
+        text = text[:text.index('PATTERNS')]
+    return text
 
 '''
 harbor: readme/how/outline
@@ -319,6 +387,32 @@ def makeAttrib():
                            'harbor: docs made simple')
     return attrib
 
+def collate():
+    pass
+
+def toScreen():
+    print(filepath+':')
+    for path in docOutline:
+        if path in docGroups:
+            print(path)
+            print(docGroups[path])
+            print(' ')
+        elif verbose:
+            print('\n\n\n --- NO TEXT ASSIGNED TO SECTION: {0} --- \n\n\n'.format(path))
+    print('-----------------------\n')
+
+    print(makeAttrib())
+
+def toFiles():
+    with open(filepath,'w') as f:
+        for path in docOutline:
+            if path in docGroups:
+                f.write(docGroups[path])
+            elif verbose:
+                print('\n\n\n --- NO TEXT ASSIGNED TO SECTION: {0} --- \n\n\n'.format(path))
+        if credit:
+            f.write(makeAttrib())
+
 def makeDocs(sourceFile,patternFile,debug=False,verbose=False,credit=False):
     groups = getDocs(sourceFile)
 
@@ -335,29 +429,79 @@ def makeDocs(sourceFile,patternFile,debug=False,verbose=False,credit=False):
         docGroups = groups[doc]
         docOutline = outline[doc]['contents']
 
-        if not debug:
-            with open(filepath,'w') as f:
-                for path in docOutline:
-                    if path in docGroups:
-                        f.write(docGroups[path])
-                    elif verbose:
-                        print('\n\n\n --- NO TEXT ASSIGNED TO SECTION: {0} --- \n\n\n'.format(path))
-                if credit:
-                    f.write(makeAttrib())
-        else:
-            print(filepath+':')
-            for path in docOutline:
-                if path in docGroups:
-                    print(path)
-                    print(docGroups[path])
-                    print(' ')
-                elif verbose:
-                    print('\n\n\n --- NO TEXT ASSIGNED TO SECTION: {0} --- \n\n\n'.format(path))
-            print('-----------------------\n')
 
-            print(makeAttrib())
+from pprint import pprint
 
 
+def collateDocs(markup):
+    '''
+    >>> raw = [['harbor: readme/example',
+    ...         '',
+    ...         '{TODO}[section]'],
+    ...        ['harbor: readme/another',
+    ...         'sample',
+    ...         '',
+    ...         'test']]
+    >>> collateDocs(raw) == {'readme':
+    ...                          {'readme/another':
+    ...                              [['harbor: readme/another',
+    ...                                'sample', '', 'test']],
+    ...                           'readme/example':
+    ...                              [['harbor: readme/example',
+    ...                                '',
+    ...                                '{TODO}[section]']]}}
+    True
+    '''
 
-makeDocs('harbor.py','harbor.harbor',debug=False,verbose=True,credit=True)
+    d = {}
+    for m in markup:
+        assert(m[0].startswith('harbor: '))
+        f,path = parsePath(m[0])
+        if f not in d:
+            d[f] = {}
+        if path not in d[f]:
+            d[f][path] = []
+
+        d[f][path].append(m)
+
+    return d
+
+def getDocs(sourceFile):
+    source = [loadFile(f) for f in sourceFile]
+    comments = [extractComments(f) for f in source]
+    markup = []
+    for f in comments:
+        markup += extractMarkup(f)
+
+    docs = collateDocs(markup)
+
+def getPatterns(patternFile):
+    source = [loadFile(f) for f in patternFile]
+    patterns = [extractPatterns(f) for f in source]
+    p = {}
+    for f in patterns:
+        for k,v in parsePatterns(f).items():
+            assert(k not in p.keys())
+            p[k] = v
+
+    return p
+
+
+def exe(sourceFile,patternFile,debug=False,verbose=False,credit=False):
+    if type(sourceFile) == type('string'):
+        sourceFile = [sourceFile]
+    if type(patternFile) == type('string'):
+        patternFile = [patternFile]
+
+    docs =     getDocs(sourceFile)
+    patterns = getPatterns(patternFile)
+
+    pprint(patterns)
+
+
+
+
+#exe('harbor.py','harbor.harbor')
+
+#exe('harbor.py','harbor.harbor',debug=False,verbose=True,credit=True)
 
