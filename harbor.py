@@ -317,43 +317,36 @@ def parse(line,patterns):
 
     return ''.join(temp)
 
-def atomicSub(group,patterns):
-    '''
-    >>> group = ['{hello}[another] {world}[sample]',
-    ...          '{abc}[another] {def}[sample]',
-    ...          '{ghi}[another] {jkl}[sample]',
-    ...          '{mno}[another] {pqr}[sample]']
-    >>> patterns = {'sample': '**{sample}**',
-    ...             'another': '- *`{another}`*'}
-    >>> atomicSub(group,patterns) == ['- *`hello`* **world**',
-    ...                               '- *`abc`* **def**',
-    ...                               '- *`ghi`* **jkl**',
-    ...                               '- *`mno`* **pqr**']
-    True
-    '''
-    return [parse(g,patterns) for g in group]
 
-def sub(groups,patterns):
-    '''
-    >>> groups = {'aaa': {'aaa/bbb/ccc': ['{abc}[another] {def}[sample]',
-    ...                                   '{ghi}[another] {jkl}[sample]']},
-    ...           'iii': {'iii/jjj/kkk': ['{mno}[another] {pqr}[sample]',
-    ...                                   '{stu}[another] {vwx}[sample]']}}
+def applyMacros(groups,patterns):
+    r'''
+    >>> groups = {'aaa': {'aaa/bbb/ccc': [['{abc}[another] {def}[sample]'],
+    ...                                   ['{ghi}[another] {jkl}[sample]']]},
+    ...           'iii': {'iii/jjj/kkk': [['{mno}[another] {pqr}[sample]'],
+    ...                                   ['{stu}[another] {vwx}[sample]']]}}
+
     >>> patterns = {'sample': '**{sample}**',
     ...             'another': '- *`{another}`*'}
-    >>> result = sub(groups,patterns)
-    >>> list(result['aaa'].keys()) == ['aaa/bbb/ccc']
-    True
-    >>> list(result['iii'].keys()) == ['iii/jjj/kkk']
-    True
-    >>> type(result['aaa']['aaa/bbb/ccc']) == type('string')
+
+    >>> expected = {'iii': {'iii/jjj/kkk': '- *`mno`* **pqr**\n'
+    ...                                    '- *`stu`* **vwx**'},
+    ...             'aaa': {'aaa/bbb/ccc': '- *`abc`* **def**\n'
+    ...                                    '- *`ghi`* **jkl**'}}
+
+    >>> applyMacros(groups,patterns) == expected
     True
     '''
 
     for f in groups.keys():
         for path in groups[f].keys():
-            groups[f][path] = atomicSub(groups[f][path],patterns)
-            groups[f][path] = ' \n' + ' \n'.join(groups[f][path]) + ' \n'
+            for i in range(len(groups[f][path])):
+                temp = groups[f][path][i]
+
+                temp = '\n'.join(temp)
+                temp = parse(temp,patterns)
+
+                groups[f][path][i] = temp
+            groups[f][path] = '\n'.join(groups[f][path])
     return groups
 
 '''
@@ -474,6 +467,7 @@ def getDocs(sourceFile):
         markup += extractMarkup(f)
 
     docs = collateDocs(markup)
+    return docs
 
 def getPatterns(patternFile):
     source = [loadFile(f) for f in patternFile]
@@ -496,7 +490,8 @@ def exe(sourceFile,patternFile,debug=False,verbose=False,credit=False):
     docs =     getDocs(sourceFile)
     patterns = getPatterns(patternFile)
 
-    pprint(patterns)
+    docs = applyMacros(docs,patterns)
+
 
 
 
