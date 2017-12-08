@@ -12,7 +12,12 @@ def loadFile(filename):
     return text
 
 def makePath(line):
-    line = line.strip('harbor: ')
+    '''
+    >>> makePath('harbor: abc/def/ghi')
+    ['abc', 'def', 'ghi']
+    '''
+    assert(line.startswith('harbor: '))
+    line = line[len('harbor: '):].strip()
     return line.split('/')
 
 def extractBlockComments(text):
@@ -20,12 +25,12 @@ def extractBlockComments(text):
     indent = None
     buff = []
     for line in text:
-        if line.strip() == "'''" and indent != None:
+        if line.strip() == "'''" and indent == None:
+            indent = len(line) - len(line.strip())
+        elif line.strip() == "'''" and indent != None:
             indent = None
             groups.append(buff)
             buff = []
-        elif line.strip() == "'''" and indent == None:
-            indent = len(line) - len(line.strip())
         elif indent != None:
             buff += [line[indent:]]
     return groups
@@ -68,12 +73,13 @@ def getDocs(filename):
 
     return temp
 
+def extractPatternSection(text):
+    assert('PATTERNS' in text)
+    return text[text.index('PATTERNS')+1:]
+
 def getPatterns(filename):
     text = loadFile(filename)
-    assert('PATTERNS' in text)
-    text = text[text.index('PATTERNS')+1:]
-
-
+    text = extractPatternSection(text)
 
     d = []
 
@@ -88,11 +94,14 @@ def getPatterns(filename):
 
     return d
 
-def getOutline(filename):
-    text = loadFile(filename)
+def extractOutlineSection(text):
     assert('OUTLINE' in text)
     assert('PATTERNS' in text)
-    text = text[text.index('OUTLINE')+1:text.index('PATTERNS')]
+    return text[text.index('OUTLINE')+1:text.index('PATTERNS')]
+
+def getOutline(filename):
+    text = loadFile(filename)
+    text = extractOutlineSection(text)
 
     filenames = {}
 
@@ -157,13 +166,19 @@ def makeDocs(sourceFile,patternFile,debug=False):
     #pprint(patterns)
 
     assert(all([k in outline for k in groups.keys()]))
+
     for doc in outline.keys():
         filepath = outline[doc]['filename']
 
         docGroups = groups[doc]
         docOutline = outline[doc]['contents']
 
-        if debug:
+        if not debug:
+            with open(filepath,'w') as f:
+                for path in docOutline:
+                    if path in docGroups:
+                        f.write(docGroups[path])
+        else:
             print(filepath+':')
             for path in docOutline:
                 if path in docGroups:
@@ -171,12 +186,10 @@ def makeDocs(sourceFile,patternFile,debug=False):
                     print(docGroups[path])
                     print(' ')
             print('-----------------------\n')
-        else:
-            with open(filepath,'w') as f:
-                for path in docOutline:
-                    if path in docGroups:
-                        f.write(docGroups[path])
 
-makeDocs('example.py', 'example.harbor', debug=True)
+
+
+
+#makeDocs('examples/helloworld/helloworld.py', 'examples/helloworld/helloworld.harbor', debug=True)
 
 

@@ -1,0 +1,8 @@
+OUTLINE
+
+helloworld: examples/helloworld/helloworld.md
+
+PATTERNS
+
+expand:
+    {expand}, world!

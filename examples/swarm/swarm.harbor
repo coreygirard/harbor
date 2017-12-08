@@ -1,0 +1,94 @@
+OUTLINE
+
+spec: examples/swarm/swarm.md
+  ranges
+    operations
+      creating
+
+    properties
+    methods
+
+  arrays
+    operations
+      creating
+      accessing
+      packing
+      unpacking
+
+    properties
+    methods
+
+  strings
+    operations
+      creating
+      concatenating
+      querying
+
+    properties
+    methods
+    url-methods
+
+  dicts
+    operations
+      creating
+      inserting
+      modifying
+      accessing
+      deleting
+
+    properties
+    methods
+
+  sets
+
+  types
+    operations
+      creating
+
+    properties
+    methods
+
+  agents
+    defining
+    properties
+    methods
+
+  subagents
+    defining
+    properties
+    methods
+
+  print
+    properties
+    methods
+
+  error
+    properties
+    methods
+
+  logging
+    to-file
+    to-screen
+    properties
+    methods
+
+  analytics
+    properties
+    methods
+
+  http
+    properties
+    methods
+    subagents
+
+
+PATTERNS
+
+section:
+    ## {section}
+subsection:
+    #### {subsection}
+subsubsection:
+    **{subsubsection}**
+method:
+    - **`{method}`**

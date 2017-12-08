@@ -1,13 +1,13 @@
 OUTLINE
 
-quickstart: example_quickstart.md
+quickstart: examples/simple/simple_quickstart.md
   basic
     install
     use
 
   intermediate
 
-spec: example_specification.md
+spec: examples/simple/simple_specification.md
   objects
     small
     large
