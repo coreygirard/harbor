@@ -168,6 +168,22 @@ def atomicSub(group,patterns):
     return [parse(g,patterns) for g in group]
 
 def sub(groups,patterns):
+    '''
+    >>> groups = {'aaa': {'aaa/bbb/ccc': ['{abc}[another] {def}[sample]',
+    ...                                   '{ghi}[another] {jkl}[sample]']},
+    ...           'iii': {'iii/jjj/kkk': ['{mno}[another] {pqr}[sample]',
+    ...                                   '{stu}[another] {vwx}[sample]']}}
+    >>> patterns = {'sample': '**{sample}**',
+    ...             'another': '- *`{another}`*'}
+    >>> result = sub(groups,patterns)
+    >>> list(result['aaa'].keys()) == ['aaa/bbb/ccc']
+    True
+    >>> list(result['iii'].keys()) == ['iii/jjj/kkk']
+    True
+    >>> type(result['aaa']['aaa/bbb/ccc']) == type('string')
+    True
+    '''
+
     for f in groups.keys():
         for path in groups[f].keys():
             groups[f][path] = atomicSub(groups[f][path],patterns)

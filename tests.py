@@ -90,6 +90,86 @@ class TestGetPatterns(unittest.TestCase):
         self.assertEqual(results,expected)
 
 
+class TestGetDocs(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+        with open(path.join(self.test_dir, 'test.py'), 'w') as f:
+            f.write('\n'.join(['# some comments',
+                               "'''",
+                               'harbor: aaa/bbb/ccc',
+                               'stuff',
+                               'morestuff',
+                               "'''",
+                               'a = 4',
+                               'b = 2',
+                               ' ',
+                               "'''",
+                               'harbor: iii/jjj/kkk',
+                               'hello',
+                               "'''",
+                               'e = 5']))
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    def test_get_docs(self):
+        results = harbor.getDocs(path.join(self.test_dir, 'test.py'))
+
+        expected = {'aaa': {'aaa/bbb/ccc': ['stuff',
+                                            'morestuff']},
+                    'iii': {'iii/jjj/kkk': ['hello']}}
+
+        self.assertEqual(results,expected)
+
+
+class TestIntegration(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+        with open(path.join(self.test_dir, 'test.py'), 'w') as f:
+            f.write('\n'.join(['# some comments',
+                               "'''",
+                               'harbor: test/aaa/bbb',
+                               'stuff',
+                               'morestuff',
+                               "'''",
+                               'a = 4',
+                               'b = 2',
+                               ' ',
+                               "'''",
+                               'harbor: test/ddd',
+                               'hello',
+                               "'''",
+                               'e = 5']))
+
+        with open(path.join(self.test_dir, 'test.harbor'), 'w') as f:
+            f.write('\n'.join(['OUTLINE',
+                               'test: ' + path.join(self.test_dir,'test.md'),
+                               '  aaa',
+                               '    bbb',
+                               '    ccc',
+                               '  ddd',
+                               '    eee',
+                               'PATTERNS',
+                               'sample:',
+                               '    **{sample}**',
+                               'another:',
+                               '    - *`{another}`*']))
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    def test_integration(self):
+        harbor.makeDocs(path.join(self.test_dir, 'test.py'),
+                        path.join(self.test_dir, 'test.harbor'),
+                        debug=True)
+        harbor.makeDocs(path.join(self.test_dir, 'test.py'),
+                        path.join(self.test_dir, 'test.harbor'),
+                        debug=False)
+
+        with open(path.join(self.test_dir, 'test.md'),'r') as f:
+            data = f.read()
+
+        self.assertEqual(data,'stuff\nmorestuffhello')
 
 
 class TestExtractBlockComments(unittest.TestCase):
