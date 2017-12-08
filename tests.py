@@ -156,6 +156,18 @@ class TestExtractOutlineSection(unittest.TestCase):
         self.assertEqual(results,['aaa','bbb'])
 
 
+class TestParse(unittest.TestCase):
+    def test_parse(self):
+        test = '{hello}[another] {world}[sample]'
+
+        patterns = {'sample': '**{sample}**',
+                    'another': '- *`{another}`*'}
+
+        result = harbor.parse(test,patterns)
+        expected = '- *`hello`* **world**'
+
+        self.assertEqual(result,expected)
+
 
 
 def load_tests(loader, tests, ignore):

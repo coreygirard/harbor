@@ -125,7 +125,15 @@ def getOutline(filename):
 
     return filenames
 
-def parse(line,pattern):
+def parse(line,patterns):
+    '''
+    >>> line = '{hello}[another] {world}[sample]'
+    >>> patterns = {'sample': '**{sample}**',
+    ...            'another': '- *`{another}`*'}
+    >>> parse(line,patterns)
+    '- *`hello`* **world**'
+    '''
+
     s = re.split(r'(\{.*?\}\[.*?\])',line)
 
     temp = []
@@ -133,8 +141,8 @@ def parse(line,pattern):
         match = re.fullmatch(r'\{(.*?)\}\[(.*?)\]',w)
         if match:
             fromStr,lookup = match.groups()
-            if lookup in pattern:
-                toStr = re.sub('{'+lookup+'}',fromStr,pattern[lookup])
+            if lookup in patterns:
+                toStr = re.sub('{'+lookup+'}',fromStr,patterns[lookup])
                 temp.append(toStr)
             else:
                 temp.append(w)
@@ -144,6 +152,19 @@ def parse(line,pattern):
     return ''.join(temp)
 
 def atomicSub(group,patterns):
+    '''
+    >>> group = ['{hello}[another] {world}[sample]',
+    ...          '{abc}[another] {def}[sample]',
+    ...          '{ghi}[another] {jkl}[sample]',
+    ...          '{mno}[another] {pqr}[sample]']
+    >>> patterns = {'sample': '**{sample}**',
+    ...             'another': '- *`{another}`*'}
+    >>> atomicSub(group,patterns) == ['- *`hello`* **world**',
+    ...                               '- *`abc`* **def**',
+    ...                               '- *`ghi`* **jkl**',
+    ...                               '- *`mno`* **pqr**']
+    True
+    '''
     return [parse(g,patterns) for g in group]
 
 def sub(groups,patterns):
