@@ -249,6 +249,17 @@ class TestParse(unittest.TestCase):
         self.assertEqual(result,expected)
 
 
+        test = '{hello}[another] {world}[sample2]'
+
+        patterns = {'sample': '**{sample}**',
+                    'another': '- *`{another}`*'}
+
+        result = harbor.parse(test,patterns)
+        expected = '- *`hello`* {world}[sample2]'
+
+        self.assertEqual(result,expected)
+
+
 
 def load_tests(loader, tests, ignore):
     tests.addTests(doctest.DocTestSuite(harbor))
