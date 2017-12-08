@@ -1,6 +1,13 @@
 from pprint import pprint
 import re
 
+'''
+harbor: readme/todo
+[ ] Allow multiple inputs to text replacement macros
+[ ] Clean output to be even more human- readable/editable
+'''
+
+
 
 '''
 harbor: readme
@@ -24,6 +31,25 @@ harbor: readme/what
 There are plenty of powerful documentation generators out there, but I wanted
 something nice and simple for small projects, that reads straight from the source
 code, makes as few assumptions as possible, and outputs plain Markdown files.
+'''
+
+'''
+harbor: readme/why
+
+{Why}[section]
+**Harbor** aims to be a minimalist generator of fine Markdown documentation.
+There are plenty of powerful documentation generators out there, but I wanted
+something nice and simple for small projects, that reads straight from the source
+code, makes as few assumptions as possible, and outputs plain Markdown files.
+
+It's designed to be simple enough to be used manually to generate a doc skeleton
+for manual tweaking, but also modular enough to be used in an automated build pipeline.
+
+### Philosophy
+- Have no opinions: *Don't enforce any particular style. Just allow the definition of
+arbitrary macros for text modification. This could conceivably generate HTML with the
+correct `.harbor` file.*
+
 '''
 
 def loadFile(filename):
@@ -99,6 +125,12 @@ def getDocs(filename):
 
     return temp
 
+'''
+harbor: readme/how/pattern
+The `PATTERN` section specifies essentially macros to be executed on all generated documentation.
+This will make more sense when we look at the next file.
+'''
+
 def extractPatternSection(text):
     assert('PATTERNS' in text)
     return text[text.index('PATTERNS')+1:]
@@ -120,10 +152,31 @@ def getPatterns(filename):
 
     return d
 
+
+'''
+harbor: readme/how/outline
+
+{}[samplepattern]
+
+In the above, you can see two sections: `OUTLINE` and `PATTERNS`. They must be preceeded
+by those headers, in all-caps, and must be in that order. The `OUTLINE` section specifies
+the names of the files to be generated, and their internal structure.
+'''
+
 def extractOutlineSection(text):
     assert('OUTLINE' in text)
     assert('PATTERNS' in text)
     return text[text.index('OUTLINE')+1:text.index('PATTERNS')]
+
+'''
+harbor: readme/how/outline
+Each line in the `OUTLINE` section without indentation denotes a file. The part
+before the `:` is the nickname for the file, to be used elsewhere to refer to that file.
+The part after the `:` is the actual filename, to be used when saving the generated Markdown.
+All of the indented lines follow general grade-school outlining rules, in terms of how
+nesting works. The sections can have arbitrary names, excluding spaces. Best practice
+is Lisp-style naming for multi-word sections: `another-section` or `this-is-a-wordy-label`.
+'''
 
 def getOutline(filename):
     text = loadFile(filename)
@@ -213,68 +266,33 @@ def sub(groups,patterns):
     for f in groups.keys():
         for path in groups[f].keys():
             groups[f][path] = atomicSub(groups[f][path],patterns)
-            groups[f][path] = '\n'.join(groups[f][path])
+            groups[f][path] = ' \n' + ' \n'.join(groups[f][path]) + ' \n'
     return groups
 
-"""
-harbor: readme/how
+'''
+harbor: readme/how/intro
 {How}[section]
 
 Two files are required to generate documentation with **Harbor**. The first is
 a `.harbor` file, which specifies both the structure of the output files
 and any substitutions. For example:
-
-```
-OUTLINE
-
-spec: specifications.md
-  first
-    sec1
-    sec2
-
-  second
-    sec1
-    sec2
-    sec3
-
-quickstart: quickstart.md
-  first
-  second
-  third
-
-PATTERNS
-title:
-    # {title}
-section:
-    ### {section}
-
-```
-
-In the above, you can see two sections: `OUTLINE` and `PATTERNS`. They must be preceeded
-by those headers, in all-caps, and must be in that order. The `OUTLINE` section specifies
-the names of the files to be generated, and their internal structure. Each line in the `OUTLINE`
-section without spaces at the beginning denotes a file. The part before the `:` is the nickname
-for the file, to be used elsewhere to refer to that file. The part after the `:` is the actual
-filename, to be used when saving the generated Markdown. All of the indented lines follow
-general grade-school outlining rules, in terms of how nesting works.
-
-The `PATTERN` section specifies essentially macros to be executed on all generated documentation.
-This will make more sense when we look at the next file.
+'''
 
 
 
+"""
 The second is your source file, annotated with Harbor notation:
 
 ```
 '''
-harbor: readme/
+{quickstart}[harborinit]
 '''
 ```
 
 """
 
 
-def makeDocs(sourceFile,patternFile,debug=False):
+def makeDocs(sourceFile,patternFile,debug=False,verbose=False):
     groups = getDocs(sourceFile)
 
     outline = getOutline(patternFile)
@@ -295,6 +313,8 @@ def makeDocs(sourceFile,patternFile,debug=False):
                 for path in docOutline:
                     if path in docGroups:
                         f.write(docGroups[path])
+                    elif verbose:
+                        print('\n\n\n --- NO TEXT ASSIGNED TO SECTION: {0} --- \n\n\n'.format(path))
         else:
             print(filepath+':')
             for path in docOutline:
@@ -302,10 +322,12 @@ def makeDocs(sourceFile,patternFile,debug=False):
                     print(path)
                     print(docGroups[path])
                     print(' ')
+                elif verbose:
+                    print('\n\n\n --- NO TEXT ASSIGNED TO SECTION: {0} --- \n\n\n'.format(path))
             print('-----------------------\n')
 
 
 
 
-makeDocs('harbor.py','harbor.harbor',debug=False)
+#makeDocs('harbor.py','harbor.harbor',debug=False,verbose=True)
 

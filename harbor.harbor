@@ -4,7 +4,11 @@ readme: README.md
   what
   why
   how
+    intro
+    outline
+    patterns
 
+  todo
 
 PATTERNS
 
@@ -16,3 +20,31 @@ title:
     # {title}
 section:
     ### {section}
+harborinit:
+    harbor: {harborinit}
+samplepattern:
+    ```
+    OUTLINE
+
+    spec: specifications.md
+      first
+        sec1
+        sec2
+
+      second
+        sec1
+        sec2
+        sec3
+
+    quickstart: quickstart.md
+      first
+      second
+      third
+
+    PATTERNS
+    title:
+        # {title}
+    section:
+        ### {section}
+
+    ```

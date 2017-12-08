@@ -169,7 +169,7 @@ class TestIntegration(unittest.TestCase):
         with open(path.join(self.test_dir, 'test.md'),'r') as f:
             data = f.read()
 
-        self.assertEqual(data,'stuff\nmorestuffhello')
+        self.assertEqual(data,' \nstuff \nmorestuff \n \nhello \n')
 
 
 class TestExtractBlockComments(unittest.TestCase):
