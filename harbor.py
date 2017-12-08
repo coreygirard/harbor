@@ -3,8 +3,12 @@ import re
 
 '''
 harbor: readme/todo
+
+{TODO}[section]
+
 [ ] Allow multiple inputs to text replacement macros
 [ ] Clean output to be even more human- readable/editable
+[ ] REFACTOR
 '''
 
 
@@ -46,10 +50,11 @@ It's designed to be simple enough to be used manually to generate a doc skeleton
 for manual tweaking, but also modular enough to be used in an automated build pipeline.
 
 ### Philosophy
-- Have no opinions: *Don't enforce any particular style. Just allow the definition of
-arbitrary macros for text modification. This could conceivably generate HTML with the
-correct `.harbor` file.*
-
+- **Have no opinions:** *Don't enforce any particular style. Just allow the definition of
+arbitrary macros for text modification. With the correct `.harbor` file, this
+could conceivably generate HTML.*
+- **Favor flexibility over power:** *Rather than features like auto-detecting which
+class or function definitions a given section of docs is near, make the user type it
 '''
 
 def loadFile(filename):
@@ -135,6 +140,11 @@ def extractPatternSection(text):
     assert('PATTERNS' in text)
     return text[text.index('PATTERNS')+1:]
 
+'''
+harbor: readme/how/pattern
+
+'''
+
 def getPatterns(filename):
     text = loadFile(filename)
     text = extractPatternSection(text)
@@ -170,12 +180,13 @@ def extractOutlineSection(text):
 
 '''
 harbor: readme/how/outline
-Each line in the `OUTLINE` section without indentation denotes a file. The part
-before the `:` is the nickname for the file, to be used elsewhere to refer to that file.
-The part after the `:` is the actual filename, to be used when saving the generated Markdown.
-All of the indented lines follow general grade-school outlining rules, in terms of how
-nesting works. The sections can have arbitrary names, excluding spaces. Best practice
-is Lisp-style naming for multi-word sections: `another-section` or `this-is-a-wordy-label`.
+Each line in the `OUTLINE` section without indentation denotes a file. The form is `aaa: bbb`,
+where `aaa` is the nickname for the file, and `bbb` is the actual filename to use when saving
+the generated documentation.
+
+Basic outline indentation rules apply, with regard to how nesting works. The sections can have
+arbitrary names, excluding spaces. Best practice for multi-word sections is Lisp-style naming:
+`another-section` or `this-is-a-wordy-label`.
 '''
 
 def getOutline(filename):

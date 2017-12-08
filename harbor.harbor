@@ -14,32 +14,32 @@ PATTERNS
 
 buildbadge:
     [![Build Status](https://travis-ci.org/crgirard/{buildbadge}.svg?branch=master)](https://travis-ci.org/crgirard/{buildbadge})
+
 codecovbadge:
     [![Codecov](https://img.shields.io/codecov/c/github/crgirard/{codecovbadge}.svg)](https://codecov.io/gh/crgirard/{codecovbadge}/)
+
 title:
     # {title}
+
 section:
     ### {section}
+
 harborinit:
     harbor: {harborinit}
+
 samplepattern:
     ```
     OUTLINE
+    readme: README.md
+      badges
+      what
+      why
+      how
+        intro
+        outline
+        patterns
 
-    spec: specifications.md
-      first
-        sec1
-        sec2
-
-      second
-        sec1
-        sec2
-        sec3
-
-    quickstart: quickstart.md
-      first
-      second
-      third
+      todo
 
     PATTERNS
     title:
