@@ -141,8 +141,8 @@ def getDocs2(filename):
 
     return temp
 
-'''
-harbor: readme/how/pattern
+'''harbor: readme/how/pattern
+
 The `PATTERN` section specifies essentially macros to be executed on all generated documentation.
 '''
 
@@ -168,8 +168,7 @@ def extractPatterns(text):
         text = text[:text.index('OUTLINE')]
     return text
 
-'''
-harbor: readme/how/pattern
+'''harbor: readme/how/pattern
 
 Format is
 '''
@@ -222,8 +221,7 @@ def parsePatterns(text):
     return d
 
 
-'''
-harbor: readme/how/outline
+'''harbor: readme/how/outline
 
 {}[samplepattern]
 
@@ -254,8 +252,8 @@ def extractOutline(text):
         text = text[:text.index('PATTERNS')]
     return text
 
-'''
-harbor: readme/how/outline
+'''harbor: readme/how/outline
+
 Each line in the `OUTLINE` section without indentation denotes a file. The form is `aaa: bbb`,
 where `aaa` is the nickname for the file, and `bbb` is the actual filename to use when saving
 the generated documentation.
@@ -265,29 +263,60 @@ arbitrary names, excluding spaces. Best practice for multi-word sections is Lisp
 `another-section` or `this-is-a-wordy-label`.
 '''
 
-def getOutline(filename):
-    text = loadFile(filename)
-    text = extractOutlineSection(text)
+def getOutline(i):
+    '''
+    >>> raw = [['OUTLINE',
+    ...         'readme: README.md',
+    ...         '  aaa',
+    ...         '  bbb',
+    ...         '    ccc',
+    ...         '  ddd',
+    ...         '    eee',
+    ...         '    fff'],
+    ...        ['OUTLINE',
+    ...         'quickstart: quickstart.md',
+    ...         '  step-1',
+    ...         '  step-2',
+    ...         '  step-3']]
+
+    >>> getOutline(raw) == {'README.md':['readme',
+    ...                                  'readme/aaa',
+    ...                                  'readme/bbb',
+    ...                                  'readme/bbb/ccc',
+    ...                                  'readme/ddd',
+    ...                                  'readme/ddd/eee',
+    ...                                  'readme/ddd/fff'],
+    ...                     'quickstart.md': ['quickstart',
+    ...                                       'quickstart/step-1',
+    ...                                       'quickstart/step-2',
+    ...                                       'quickstart/step-3']}
+    True
+    '''
+
+
+    text = []
+    for e in i:
+        text += extractOutline(e)
 
     filenames = {}
 
-    d = {}
+    stack = {}
     for line in text:
         if line.strip() != '':
-            n,line = len(line)-len(line.strip()),line.strip()
+            n = len(line)-len(line.lstrip())
+            line = line.strip()
             assert(n%2 == 0)
 
             if n == 0:
-                slug,f = line.split(' ')
-                slug = slug.strip(':')
-                filenames[slug] = {'filename':f,
-                                   'contents':[]}
-                line = slug
+                line,f = line.split(' ')
+                line = line.strip(':')
+                filenames[f] = []
 
-            d[n] = line
-            d = {k:v for k,v in d.items() if k <= n}
-            path = '/'.join([d[k] for k in sorted(d.keys())])
-            filenames[slug]['contents'] += [path]
+            stack[n] = line
+            stack = {k:v for k,v in stack.items() if k <= n}
+
+            path = '/'.join([stack[k] for k in sorted(stack.keys())])
+            filenames[f] += [path]
 
     return filenames
 
@@ -320,37 +349,36 @@ def parse(line,patterns):
 
 def applyMacros(groups,patterns):
     r'''
-    >>> groups = {'aaa': {'aaa/bbb/ccc': [['{abc}[another] {def}[sample]'],
-    ...                                   ['{ghi}[another] {jkl}[sample]']]},
-    ...           'iii': {'iii/jjj/kkk': [['{mno}[another] {pqr}[sample]'],
-    ...                                   ['{stu}[another] {vwx}[sample]']]}}
+    >>> groups = {'aaa/bbb/ccc': [['{abc}[another] {def}[sample]'],
+    ...                           ['{ghi}[another] {jkl}[sample]']],
+    ...           'iii/jjj/kkk': [['{mno}[another] {pqr}[sample]'],
+    ...                           ['{stu}[another] {vwx}[sample]']]}
 
     >>> patterns = {'sample': '**{sample}**',
     ...             'another': '- *`{another}`*'}
 
-    >>> expected = {'iii': {'iii/jjj/kkk': '- *`mno`* **pqr**\n'
-    ...                                    '- *`stu`* **vwx**'},
-    ...             'aaa': {'aaa/bbb/ccc': '- *`abc`* **def**\n'
-    ...                                    '- *`ghi`* **jkl**'}}
+    >>> expected = {'iii/jjj/kkk': '- *`mno`* **pqr**\n'
+    ...                            '- *`stu`* **vwx**',
+    ...             'aaa/bbb/ccc': '- *`abc`* **def**\n'
+    ...                            '- *`ghi`* **jkl**'}
 
     >>> applyMacros(groups,patterns) == expected
     True
     '''
 
-    for f in groups.keys():
-        for path in groups[f].keys():
-            for i in range(len(groups[f][path])):
-                temp = groups[f][path][i]
+    for path in groups.keys():
+        for i in range(len(groups[path])):
+            temp = groups[path][i]
 
-                temp = '\n'.join(temp)
-                temp = parse(temp,patterns)
+            temp = '\n'.join(temp)
+            temp = parse(temp,patterns)
 
-                groups[f][path][i] = temp
-            groups[f][path] = '\n'.join(groups[f][path])
+            groups[path][i] = temp
+        groups[path] = '\n'.join(groups[path])
     return groups
 
-'''
-harbor: readme/how/intro
+'''harbor: readme/how/intro
+
 {How}[section]
 
 Two files are required to generate documentation with **Harbor**. The first is
@@ -383,28 +411,29 @@ def makeAttrib():
 def collate():
     pass
 
-def toScreen():
-    print(filepath+':')
-    for path in docOutline:
-        if path in docGroups:
-            print(path)
-            print(docGroups[path])
-            print(' ')
-        elif verbose:
-            print('\n\n\n --- NO TEXT ASSIGNED TO SECTION: {0} --- \n\n\n'.format(path))
-    print('-----------------------\n')
-
-    print(makeAttrib())
-
-def toFiles():
-    with open(filepath,'w') as f:
-        for path in docOutline:
-            if path in docGroups:
-                f.write(docGroups[path])
+def toScreen(outline,docs,verbose=False,credit=False):
+    for filename,contents in outline.items():
+        print('-'*(len(filename)+8))
+        print(' '*4 + filename)
+        print('-'*(len(filename)+8) + '\n\n')
+        for i in contents:
+            if i in docs:
+                print(docs[i])
             elif verbose:
-                print('\n\n\n --- NO TEXT ASSIGNED TO SECTION: {0} --- \n\n\n'.format(path))
+                print('\n\n\n --- NO TEXT ASSIGNED TO SECTION: {0} --- \n\n\n'.format(i))
         if credit:
-            f.write(makeAttrib())
+            print(makeAttrib())
+
+def toFiles(outline,docs,verbose=False,credit=False):
+    for filename,contents in outline.items():
+        with open(filename,'w') as f:
+            for i in contents:
+                if i in docs:
+                    f.write(docs[i])
+                elif verbose:
+                    print('\n --- NO TEXT ASSIGNED TO SECTION: {0} --- \n'.format(i))
+            if credit:
+                f.write(makeAttrib())
 
 def makeDocs(sourceFile,patternFile,debug=False,verbose=False,credit=False):
     groups = getDocs(sourceFile)
@@ -435,14 +464,13 @@ def collateDocs(markup):
     ...         'sample',
     ...         '',
     ...         'test']]
-    >>> collateDocs(raw) == {'readme':
-    ...                          {'readme/another':
-    ...                              [['harbor: readme/another',
-    ...                                'sample', '', 'test']],
-    ...                           'readme/example':
-    ...                              [['harbor: readme/example',
-    ...                                '',
-    ...                                '{TODO}[section]']]}}
+    >>> collateDocs(raw) == {'readme/another':
+    ...                         [['harbor: readme/another',
+    ...                           'sample', '', 'test']],
+    ...                      'readme/example':
+    ...                         [['harbor: readme/example',
+    ...                           '',
+    ...                           '{TODO}[section]']]}
     True
     '''
 
@@ -450,17 +478,14 @@ def collateDocs(markup):
     for m in markup:
         assert(m[0].startswith('harbor: '))
         f,path = parsePath(m[0])
-        if f not in d:
-            d[f] = {}
-        if path not in d[f]:
-            d[f][path] = []
+        if path not in d:
+            d[path] = []
 
-        d[f][path].append(m)
+        d[path].append(m)
 
     return d
 
-def getDocs(sourceFile):
-    source = [loadFile(f) for f in sourceFile]
+def getDocs(source):
     comments = [extractComments(f) for f in source]
     markup = []
     for f in comments:
@@ -469,9 +494,8 @@ def getDocs(sourceFile):
     docs = collateDocs(markup)
     return docs
 
-def getPatterns(patternFile):
-    source = [loadFile(f) for f in patternFile]
-    patterns = [extractPatterns(f) for f in source]
+def getPatterns(text):
+    patterns = [extractPatterns(f) for f in text]
     p = {}
     for f in patterns:
         for k,v in parsePatterns(f).items():
@@ -481,22 +505,39 @@ def getPatterns(patternFile):
     return p
 
 
-def exe(sourceFile,patternFile,debug=False,verbose=False,credit=False):
+def exe(sourceFile,harborFile,debug=False,verbose=False,credit=False):
     if type(sourceFile) == type('string'):
-        sourceFile = [sourceFile]
-    if type(patternFile) == type('string'):
-        patternFile = [patternFile]
+        source = [loadFile(sourceFile)]
+    else:
+        source = [loadFile(f) for f in sourceFile]
 
-    docs =     getDocs(sourceFile)
-    patterns = getPatterns(patternFile)
+    if type(harborFile) == type('string'):
+        harbor = [loadFile(harborFile)]
+    else:
+        harbor = [loadFile(f) for f in harborFile]
+
+    docs =     getDocs(source)
+    outline =  getOutline(harbor)
+    patterns = getPatterns(harbor)
 
     docs = applyMacros(docs,patterns)
 
+    pprint(docs)
+    pprint(outline)
+
+    if not debug:
+        toFiles(outline,docs,verbose,credit)
+    else:
+        toScreen(outline,docs,verbose,credit)
 
 
 
 
-#exe('harbor.py','harbor.harbor')
+exe('harbor.py',
+    'harbor.harbor',
+    verbose=True,
+    debug=False,
+    credit=True)
 
 #exe('harbor.py','harbor.harbor',debug=False,verbose=True,credit=True)
 
