@@ -2,7 +2,13 @@ import shutil, tempfile
 from os import path
 import unittest
 import doctest
+
 import harbor
+import outline
+import patterns
+import comments
+import parse
+import output
 
 class TestFetchFile(unittest.TestCase):
     def setUp(self):
@@ -106,7 +112,7 @@ class TestExtractComments(unittest.TestCase):
                      ">>> makePath('harbor: abc/def/ghi')",
                      "['abc', 'def', 'ghi']"]]
 
-        result = harbor.extractComments(source)
+        result = comments.extractComments(source)
         self.assertEqual(expected,result)
 
 
@@ -133,7 +139,7 @@ class TestExtractMarkup(unittest.TestCase):
                      "{harbor}[title]",
                      "*docs made simple*"]]
 
-        result = harbor.extractMarkup(source)
+        result = comments.extractMarkup(source)
         self.assertEqual(expected,result)
 
 
@@ -193,7 +199,11 @@ class TestIntegration(unittest.TestCase):
 
 
 def load_tests(loader, tests, ignore):
-    tests.addTests(doctest.DocTestSuite(harbor))
+    for f in [harbor, outline, patterns, comments, parse, output]:
+        try:
+            tests.addTests(doctest.DocTestSuite(f))
+        except:
+            pass
     return tests
 
 
