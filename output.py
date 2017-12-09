@@ -2,7 +2,7 @@
 
 
 
-def toScreen(docs,verbose=False,credit=False):
+def toScreen(docs):
     '''
     >>> d = {'readme.md':['hello,',
     ...                   'world!']}
@@ -24,7 +24,7 @@ def toScreen(docs,verbose=False,credit=False):
         for i in lines:
             print(i)
 
-def toFiles(docs,verbose=False,credit=False):
+def toFiles(docs):
     for filename,lines in docs.items():
         with open(filename,'w') as f:
             for i in lines:

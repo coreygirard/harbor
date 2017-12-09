@@ -47,6 +47,79 @@ def parse(line,lookup,patterns):
     elif lookup in patterns.keys():
         return re.sub('{'+lookup+'}',line,patterns[lookup])
 
+class Match(object):
+    def __init__(self,*args):
+        self.loc = {'{': args[0],
+                    '}': args[1]-1,
+                    '[': args[1],
+                    ']': args[2]-1}
+
+        self.string = args[3]
+
+        for s in '{}[]':
+            assert(self.string[self.loc[s]] == s)
+
+    def getOutput(self):
+        return (self.string[self.loc['{']+1:self.loc['}']],
+                self.string[self.loc['[']+1:self.loc[']']])
+
+    def __repr__(self):
+        return 'Match{0}'.format(self.getOutput())
+
+def getMacros(text,valid):
+    r'''
+    >>> text = '{abc}[another] {def}[sample]\n'
+    >>> result = getMacros(text,['another', 'sample'])
+    >>> result == ['',
+    ...            ('abc', 'another'),
+    ...            ' ',
+    ...            ('def', 'sample'),
+    ...            '\n']
+    True
+    >>> result = getMacros(text,['another'])
+    >>> result == ['',
+    ...            ('abc', 'another'),
+    ...            ' {def}[sample]\n']
+    True
+    '''
+
+    valid += ['p']
+
+    temp = []
+
+    patt = r'\}\[.+?\]'
+    for m in re.finditer(patt,text):
+        n = 1
+        t = m.start()
+        while n > 0 and t > 0:
+            t -= 1
+            if text[t] == '}':
+                n += 1
+            elif text[t] == '{':
+                n -= 1
+
+        a,b,c = [t,m.start()+1,m.end()]
+        if text[b+1:c-1] in valid:
+            temp.append(Match(a,b,c,text))
+
+    if len(temp) == 0:
+        return [text]
+
+    out = [temp.pop(0)]
+    for e in temp:
+        if e.loc['{'] > out[-1].loc[']']:
+            out.append(e)
+
+    trailing = 0
+    temp = []
+    for e in out:
+        temp.append(text[trailing:e.loc['{']])
+        temp.append(e.getOutput())
+        trailing = e.loc[']']+1
+    temp.append(text[trailing:])
+
+    return temp
+
 def applyPatterns(groups,patterns):
     r'''
     >>> groups = {'aaa/bbb/ccc': '{abc}[another] {def}[sample]\n'
@@ -66,32 +139,18 @@ def applyPatterns(groups,patterns):
     True
     '''
 
-    pattA,pattB = r'[^\{\}]*?',r'.*?'
-    for p in groups.keys():
-        temp = re.split(r'(\{'+pattA+r'\}\['+pattB+r'\])',groups[p])
-        groups[p] = []
-        for w in temp:
-            match = re.fullmatch(r'\{('+pattA+r')\}\[('+pattB+r')\]',w)
-            if match:
-                fromStr,lookup = match.groups()
-                groups[p].append(parse(fromStr,lookup,patterns))
+    for k,v in groups.items():
+        temp = getMacros(v,list(patterns.keys()))
+        groups[k] = []
+
+        for e in temp:
+            if type(e) == type('string'):
+                groups[k].append(e)
             else:
-                groups[p].append(w)
-        groups[p] = ''.join(groups[p])
+                groups[k].append(parse(e[0],e[1],patterns))
+        groups[k] = ''.join(groups[k])
 
-    #pprint(groups)
-
-    '''
-    for path in groups.keys():
-        temp = groups[path]
-
-        temp = '\n'.join(temp) + ' \n'
-        temp = parse(temp,patterns)
-
-        groups[path] = temp
-    '''
     return groups
-
 
 
 

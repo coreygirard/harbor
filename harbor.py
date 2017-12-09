@@ -14,6 +14,7 @@ import output
 [ ] Clean output to be even more human- readable/editable
 [ ] Handle multi-line inputs to macros
 [ ] REFACTOR
+[ ] Implement a 'trace' function to print an outline of the docs' origins (file name and line number)
 [ ] Experiment with supporting project languages other than Python
 '''
 
@@ -92,29 +93,26 @@ def exe(sourceFile,harborFile,debug=False,verbose=False,credit=False):
             'outline':  outline.getOutline(harbor),
             'patterns': patterns.getPatterns(harbor)}
 
-    #pprint(docs['comments'])
-
     docs['comments'] = parse.applyPatterns(docs['comments'],docs['patterns'])
-    docs['final'] = parse.structure(docs['comments'],docs['outline'])
-
-    pprint(docs['final'])
-
-    #docs = applyMacros(docs,patterns)
-
-    #pprint(docs)
-    #pprint(outline)
+    docs['final'] = parse.structure(docs['comments'],docs['outline'],verbose,credit)
 
     if not debug:
-        output.toFiles(docs['final'],verbose,credit)
+        output.toFiles(docs['final'])
     else:
-        output.toScreen(docs['final'],verbose,credit)
+        output.toScreen(docs['final'])
 
-'''
+
+
 exe(['harbor.py','outline.py','patterns.py','comments.py','parse.py','output.py'],
     'harbor.harbor',
     verbose=True,
-    debug=True,
+    debug=False,
     credit=True)
-'''
+
 #exe('harbor.py','harbor.harbor',debug=False,verbose=True,credit=True)
+
+
+
+
+
 
