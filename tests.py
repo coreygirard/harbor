@@ -143,16 +143,14 @@ class TestIntegration(unittest.TestCase):
         self.test_dir = tempfile.mkdtemp()
         with open(path.join(self.test_dir, 'test.py'), 'w') as f:
             f.write('\n'.join(['# some comments',
-                               "'''",
-                               'harbor: test/aaa/bbb',
+                               "'''harbor: test/aaa/bbb",
                                'stuff',
                                'morestuff',
                                "'''",
                                'a = 4',
                                'b = 2',
                                ' ',
-                               "'''",
-                               'harbor: test/ddd',
+                               "'''harbor: test/ddd",
                                'hello',
                                "'''",
                                'e = 5']))
@@ -175,18 +173,22 @@ class TestIntegration(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_integration(self):
-        pass
-        #harbor.exe(path.join(self.test_dir, 'test.py'),
-        #           path.join(self.test_dir, 'test.harbor'),
-        #           debug=True)
-        #harbor.exe(path.join(self.test_dir, 'test.py'),
-        #           path.join(self.test_dir, 'test.harbor'),
-        #           debug=False)
+        harbor.exe(path.join(self.test_dir, 'test.py'),
+                   path.join(self.test_dir, 'test.harbor'),
+                   debug=True)
+        harbor.exe(path.join(self.test_dir, 'test.py'),
+                   path.join(self.test_dir, 'test.harbor'),
+                   debug=False)
 
-        #with open(path.join(self.test_dir, 'test.md'),'r') as f:
-        #    data = f.read()
+        with open(path.join(self.test_dir, 'test.md'),'r') as f:
+            data = f.read()
 
-        #self.assertEqual(data,' \nstuff \nmorestuff \n \nhello \n')
+        expected = '\n'.join(['stuff',
+                              'morestuff ',
+                              'hello ',
+                              ''])
+
+        self.assertEqual(data,expected)
 
 
 

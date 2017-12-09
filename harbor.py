@@ -332,32 +332,30 @@ def parse(line,patterns):
 
 def applyMacros(groups,patterns):
     r'''
-    >>> groups = {'aaa/bbb/ccc': [['{abc}[another] {def}[sample]'],
-    ...                           ['{ghi}[another] {jkl}[sample]']],
-    ...           'iii/jjj/kkk': [['{mno}[another] {pqr}[sample]'],
-    ...                           ['{stu}[another] {vwx}[sample]']]}
+    >>> groups = {'aaa/bbb/ccc': ['{abc}[another] {def}[sample]',
+    ...                           '{ghi}[another] {jkl}[sample]'],
+    ...           'iii/jjj/kkk': ['{mno}[another] {pqr}[sample]',
+    ...                           '{stu}[another] {vwx}[sample]']}
 
     >>> patterns = {'sample': '**{sample}**',
     ...             'another': '- *`{another}`*'}
 
     >>> expected = {'iii/jjj/kkk': '- *`mno`* **pqr**\n'
-    ...                            '- *`stu`* **vwx**',
+    ...                            '- *`stu`* **vwx** \n',
     ...             'aaa/bbb/ccc': '- *`abc`* **def**\n'
-    ...                            '- *`ghi`* **jkl**'}
+    ...                            '- *`ghi`* **jkl** \n'}
 
     >>> applyMacros(groups,patterns) == expected
     True
     '''
 
     for path in groups.keys():
-        for i in range(len(groups[path])):
-            temp = groups[path][i]
+        temp = groups[path]
 
-            temp = '\n'.join(temp)
-            temp = parse(temp,patterns)
+        temp = '\n'.join(temp) + ' \n'
+        temp = parse(temp,patterns)
 
-            groups[path][i] = temp
-        groups[path] = '\n'.join(groups[path])
+        groups[path] = temp
     return groups
 
 '''harbor: readme/how/intro
@@ -447,13 +445,13 @@ def collateDocs(markup):
     ...         'sample',
     ...         '',
     ...         'test']]
-    >>> collateDocs(raw) == {'readme/another':
-    ...                         [['harbor: readme/another',
-    ...                           'sample', '', 'test']],
-    ...                      'readme/example':
-    ...                         [['harbor: readme/example',
+    >>> collateDocs(raw) == {'readme/example':
+    ...                         ['',
+    ...                           '{TODO}[section]'],
+    ...                      'readme/another':
+    ...                         ['sample',
     ...                           '',
-    ...                           '{TODO}[section]']]}
+    ...                           'test']}
     True
     '''
 
@@ -464,7 +462,8 @@ def collateDocs(markup):
         if path not in d:
             d[path] = []
 
-        d[path].append(m)
+        for e in m[1:]:
+            d[path].append(e)
 
     return d
 
@@ -514,7 +513,6 @@ def exe(sourceFile,harborFile,debug=False,verbose=False,credit=False):
         toScreen(outline,docs,verbose,credit)
 
 
-
 '''
 exe('harbor.py',
     'harbor.harbor',
@@ -522,5 +520,6 @@ exe('harbor.py',
     debug=True,
     credit=True)
 '''
+
 #exe('harbor.py','harbor.harbor',debug=False,verbose=True,credit=True)
 

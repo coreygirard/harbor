@@ -1,13 +1,12 @@
-harbor: readme
 
 # harbor
 
-*docs made simple*harbor: readme/badges
+*docs made simple* 
 
 [![Build Status](https://travis-ci.org/crgirard/harbor.svg?branch=master)](https://travis-ci.org/crgirard/harbor)
 
 [![Codecov](https://img.shields.io/codecov/c/github/crgirard/harbor.svg)](https://codecov.io/gh/crgirard/harbor/)
-harbor: readme/what
+ 
 
 **Harbor**
 1. *(noun)* A place of shelter
@@ -19,7 +18,7 @@ harbor: readme/what
 **Harbor** aims to be a minimalist generator of fine Markdown documentation.
 There are plenty of powerful documentation generators out there, but I wanted
 something nice and simple for small projects, that reads straight from the source
-code, makes as few assumptions as possible, and outputs plain Markdown files.harbor: readme/why
+code, makes as few assumptions as possible, and outputs plain Markdown files. 
 
 ### Why
 
@@ -40,7 +39,7 @@ which class or function definitions a given docs section is near is far outweigh
 of potential layout options or non-standard formatting choices*
 - **Favor clarity over speed:** *The purpose here is mainly to provide ease of use. Simple rules,
 easily remembered, beat clever tricks that squeeze a few microseconds out of compile time. At least
-in this use case. Harbor is for when you value your own time above computation time.*harbor: readme/how/outline
+in this use case. Harbor is for when you value your own time above computation time.* 
 
 Each line in the `OUTLINE` section without indentation denotes a file. The form is `aaa: bbb`,
 where `aaa` is the nickname for the file, and `bbb` is the actual filename to use when saving
@@ -48,7 +47,7 @@ the generated documentation.
 
 Basic outline indentation rules apply, with regard to how nesting works. The sections can have
 arbitrary names, excluding spaces. Best practice for multi-word sections is Lisp-style naming:
-`another-section` or `this-is-a-wordy-label`.harbor: readme/todo
+`another-section` or `this-is-a-wordy-label`. 
 
 ### TODO
 
@@ -56,7 +55,8 @@ arbitrary names, excluding spaces. Best practice for multi-word sections is Lisp
 [ ] Allow multiple inputs to text replacement macros
 [ ] Clean output to be even more human- readable/editable
 [ ] Handle multi-line inputs to macros
-[ ] REFACTOR<br>
+[ ] REFACTOR 
+<br>
 <br>
 <br>
 <p align="center">
