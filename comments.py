@@ -69,7 +69,7 @@ def extractMarkup(groups):
     return text
 
 def collateDocs(markup):
-    '''
+    r'''
     >>> raw = [['harbor: readme/example',
     ...         '',
     ...         '{TODO}[section]'],
@@ -77,13 +77,11 @@ def collateDocs(markup):
     ...         'sample',
     ...         '',
     ...         'test']]
-    >>> collateDocs(raw) == {'readme/example':
-    ...                         ['',
-    ...                           '{TODO}[section]'],
-    ...                      'readme/another':
-    ...                         ['sample',
-    ...                           '',
-    ...                           'test']}
+    >>> collateDocs(raw) == {'readme/example': '\n'
+    ...                                        '{TODO}[section]\n',
+    ...                      'readme/another': 'sample\n'
+    ...                                        '\n'
+    ...                                        'test\n'}
     True
     '''
 
@@ -92,10 +90,10 @@ def collateDocs(markup):
         assert(m[0].startswith('harbor: '))
         f,path = parsePath(m[0])
         if path not in d:
-            d[path] = []
+            d[path] = ''
 
         for e in m[1:]:
-            d[path].append(e)
+            d[path] += e+'\n'
 
     return d
 

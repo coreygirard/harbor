@@ -27,24 +27,5 @@ section:
 harborinit:
     harbor: {harborinit}
 
-samplepattern:
-    ```
-    OUTLINE
-    readme: README.md
-      badges
-      what
-      why
-      how
-        intro
-        outline
-        patterns
-
-      todo
-
-    PATTERNS
-    title:
-        # {title}
-    section:
-        ### {section}
-
-    ```
+code:
+    ```{code}```

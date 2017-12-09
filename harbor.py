@@ -92,10 +92,12 @@ def exe(sourceFile,harborFile,debug=False,verbose=False,credit=False):
             'outline':  outline.getOutline(harbor),
             'patterns': patterns.getPatterns(harbor)}
 
+    #pprint(docs['comments'])
+
     docs['comments'] = parse.applyPatterns(docs['comments'],docs['patterns'])
     docs['final'] = parse.structure(docs['comments'],docs['outline'])
 
-    #pprint(docs['final'])
+    pprint(docs['final'])
 
     #docs = applyMacros(docs,patterns)
 
@@ -107,12 +109,11 @@ def exe(sourceFile,harborFile,debug=False,verbose=False,credit=False):
     else:
         output.toScreen(docs['final'],verbose,credit)
 
-
 '''
 exe(['harbor.py','outline.py','patterns.py','comments.py','parse.py','output.py'],
     'harbor.harbor',
     verbose=True,
-    debug=False,
+    debug=True,
     credit=True)
 '''
 #exe('harbor.py','harbor.harbor',debug=False,verbose=True,credit=True)

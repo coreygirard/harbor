@@ -25,6 +25,10 @@ def p(text,n=80):
 
     return '\n'.join(temp)
 
+
+
+
+
 def parse(line,lookup,patterns):
     '''
     >>> patterns = {'sample': '**{sample}**',
@@ -45,25 +49,22 @@ def parse(line,lookup,patterns):
 
 def applyPatterns(groups,patterns):
     r'''
-    >>> groups = {'aaa/bbb/ccc': ['{abc}[another] {def}[sample]',
-    ...                           '{ghi}[another] {jkl}[sample]'],
-    ...           'iii/jjj/kkk': ['{mno}[another] {pqr}[sample]',
-    ...                           '{stu}[another] {vwx}[sample]']}
+    >>> groups = {'aaa/bbb/ccc': '{abc}[another] {def}[sample]\n'
+    ...                          '{ghi}[another] {jkl}[sample]\n',
+    ...           'iii/jjj/kkk': '{mno}[another] {pqr}[sample]\n'
+    ...                          '{stu}[another] {vwx}[sample]\n'}
 
     >>> patterns = {'sample': '**{sample}**',
     ...             'another': '- *`{another}`*'}
 
     >>> expected = {'iii/jjj/kkk': '- *`mno`* **pqr**\n'
-    ...                            '- *`stu`* **vwx** \n',
+    ...                            '- *`stu`* **vwx**\n',
     ...             'aaa/bbb/ccc': '- *`abc`* **def**\n'
-    ...                            '- *`ghi`* **jkl** \n'}
+    ...                            '- *`ghi`* **jkl**\n'}
 
     >>> applyPatterns(groups,patterns) == expected
     True
     '''
-
-    for p in groups.keys():
-        groups[p] = '\n'.join(groups[p]) + ' \n'
 
     pattA,pattB = r'[^\{\}]*?',r'.*?'
     for p in groups.keys():
@@ -90,6 +91,9 @@ def applyPatterns(groups,patterns):
         groups[path] = temp
     '''
     return groups
+
+
+
 
 def makeAttrib():
     '''

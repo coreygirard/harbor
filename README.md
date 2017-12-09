@@ -1,12 +1,12 @@
 
 # harbor
 
-*docs made simple* 
+*docs made simple*
 
 [![Build Status](https://travis-ci.org/crgirard/harbor.svg?branch=master)](https://travis-ci.org/crgirard/harbor)
 
 [![Codecov](https://img.shields.io/codecov/c/github/crgirard/harbor.svg)](https://codecov.io/gh/crgirard/harbor/)
- 
+
 
 **Harbor**
 1. *(noun)* A place of shelter
@@ -15,7 +15,7 @@
 
 ### What
 
-**Harbor** aims to be a minimalist generator of fine Markdown documentation. 
+**Harbor** aims to be a minimalist generator of fine Markdown documentation.
 
 ### Why
 
@@ -39,7 +39,7 @@ formatting choices*
 - **Favor clarity over speed:** *The purpose here is mainly to provide ease of
 use. Simple rules, easily remembered, beat clever tricks that squeeze a few
 microseconds out of compile time. At least in this use case. Harbor is for when
-you value your own time above computation time.* 
+you value your own time above computation time.*
 The second is your source file, annotated with Harbor notation:
 
 ```
@@ -48,16 +48,16 @@ harbor: quickstart
 
 '''
 ```
- 
+
 
 ### How
 
 
 Two files are required to generate documentation with **Harbor**. The first is a
 `.harbor` file, which specifies both the structure of the output files and any
-substitutions. For example: 
+substitutions. For example:
 
-```
+{
 OUTLINE
 readme: README.md
   badges
@@ -75,9 +75,7 @@ title:
     # {title}
 section:
     ### {section}
-
-```
-
+}[code]
 
 In the above, you can see two sections: `OUTLINE` and `PATTERNS`. They must be
 preceeded by those headers, in all-caps, and must be in that order. The
@@ -91,7 +89,7 @@ filename to use when saving the generated documentation.
 Basic outline indentation rules apply, with regard to how nesting works. The
 sections can have arbitrary names, excluding spaces. Best practice for
 multi-word sections is Lisp-style naming: `another-section` or
-`this-is-a-wordy-label`. 
+`this-is-a-wordy-label`.
 
 ### TODO
 
@@ -100,4 +98,4 @@ multi-word sections is Lisp-style naming: `another-section` or
 [ ] Clean output to be even more human- readable/editable
 [ ] Handle multi-line inputs to macros
 [ ] REFACTOR
-[ ] Experiment with supporting project languages other than Python 
+[ ] Experiment with supporting project languages other than Python

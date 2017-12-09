@@ -190,8 +190,8 @@ class TestIntegration(unittest.TestCase):
             data = f.read()
 
         expected = '\n'.join(['stuff',
-                              'morestuff ',
-                              'hello ',
+                              'morestuff',
+                              'hello',
                               ''])
 
         self.assertEqual(data,expected)

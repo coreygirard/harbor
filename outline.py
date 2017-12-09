@@ -4,7 +4,25 @@
 
 '''harbor: readme/how/outline
 
-{}[samplepattern]
+{
+OUTLINE
+readme: README.md
+  badges
+  what
+  why
+  how
+    intro
+    outline
+    patterns
+
+  todo
+
+PATTERNS
+title:
+    # {title}
+section:
+    ### {section}
+}[code]
 
 {In the above, you can see two sections: `OUTLINE` and `PATTERNS`. They must be preceeded
 by those headers, in all-caps, and must be in that order. The `OUTLINE` section specifies
