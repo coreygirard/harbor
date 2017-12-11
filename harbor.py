@@ -1,21 +1,22 @@
 from pprint import pprint
 import re
-import outline
-import patterns
-import comments
-import parse
-import output
+
+from src import outline
+from src import patterns
+from src import comments
+from src import parse
+from src import output
 
 '''harbor: readme/todo
 
 {TODO}[section]
 
-[ ] Allow multiple inputs to text replacement macros
-[ ] Clean output to be even more human- readable/editable
-[ ] Handle multi-line inputs to macros
-[ ] REFACTOR
-[ ] Implement a 'trace' function to print an outline of the docs' origins (file name and line number)
-[ ] Experiment with supporting project languages other than Python
+{[ ] Allow multiple inputs to text replacement macros}[p]
+{[ ] Clean output to be even more human- readable/editable}[p]
+{[ ] Handle multi-line inputs to macros}[p]
+{[ ] REFACTOR}[p]
+{[ ] Implement a 'trace' function to print an outline of the docs' origins (file name and line number)}[p]
+{[ ] Experiment with supporting project languages other than Python}[p]
 '''
 
 '''harbor: readme
@@ -102,12 +103,13 @@ def exe(sourceFile,harborFile,debug=False,verbose=False,credit=False):
         output.toScreen(docs['final'])
 
 
-
+'''
 exe(['harbor.py','outline.py','patterns.py','comments.py','parse.py','output.py'],
     'harbor.harbor',
     verbose=True,
-    debug=False,
+    debug=True,
     credit=True)
+'''
 
 #exe('harbor.py','harbor.harbor',debug=False,verbose=True,credit=True)
 
