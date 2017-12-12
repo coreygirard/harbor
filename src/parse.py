@@ -1,6 +1,22 @@
 import re
 
 def p(text,n=80):
+    r'''
+    Processes a paragraph of text marked with {...}[p], ensuring the .md file is wrapped nicely
+
+    >>> r = p('testing testing testing '
+    ...       'testing testing testing '
+    ...       'testing testing testing '
+    ...       'testing testing testing '
+    ...       'testing testing testing '
+    ...       'testing testing testing ')
+    >>> r == str('testing testing testing testing testing '
+    ...          'testing testing testing testing testing\n'
+    ...          'testing testing testing testing testing '
+    ...          'testing testing testing  \n')
+    True
+    '''
+
     text = re.sub(r'[ ]\n',r' ',text)
     text = re.sub(r'\n[ ]',r' ',text)
     text = re.sub(r'\n',r' ',text)

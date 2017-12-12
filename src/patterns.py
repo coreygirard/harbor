@@ -20,8 +20,12 @@ def extractPatterns(text):
     >>> extractPatterns(text)
     ['ddd', 'eee', 'fff', '']
     '''
-    assert('PATTERNS' in text)
-    text = text[text.index('PATTERNS')+1:]
+
+    assert(text.count('OUTLINE') <= 1)
+    assert(text.count('PATTERNS') <= 1)
+
+    if 'PATTERNS' in text:
+        text = text[text.index('PATTERNS')+1:]
     if 'OUTLINE' in text:
         text = text[:text.index('OUTLINE')]
     return text
