@@ -291,6 +291,16 @@ class TestP(unittest.TestCase):
         self.assertEqual(result,expected)
 
 
+        case = ' '.join(['reallylongword']*3)
+
+        result = parse.p(case,n=5)
+        expected = ''.join(['reallylongword\n',
+                            'reallylongword\n',
+                            'reallylongword \n'])
+
+        self.assertEqual(result,expected)
+
+
 class TestParse(unittest.TestCase):
     def test_parse(self):
         case_line = 'hello'
@@ -302,6 +312,20 @@ class TestParse(unittest.TestCase):
         expected = '- *`hello`*'
 
         self.assertEqual(result,expected)
+
+
+
+
+        case_line = 'hello world'
+        case_lookup = 'p'
+        case_patterns = {'sample': '**{sample}**',
+                         'another': '- *`{another}`*'}
+
+        result = parse.parse(case_line,case_lookup,case_patterns)
+        expected = parse.p(case_line)
+
+        self.assertEqual(result,expected)
+
 
 
 class TestGetMacros(unittest.TestCase):
@@ -370,6 +394,23 @@ class TestStructure(unittest.TestCase):
 
         self.assertEqual(result,expected)
 
+
+
+        case_comments = {'aaa/bbb': 'hello,',
+                         'aaa/ccc': 'world!'}
+
+        case_outline = {'readme.md':['aaa',
+                                     'aaa/bbb',
+                                     'aaa/ccc']}
+
+        result = parse.structure(case_comments,case_outline,credit=True)
+        expected = {'readme.md': ['hello,', 'world!']}
+
+        self.assertEqual(list(result.keys())[0],'readme.md')
+        v = result['readme.md']
+        self.assertEqual(v[0],'hello,')
+        self.assertEqual(v[1],'world!')
+        self.assertEqual(v[2],parse.makeAttrib())
 
 
 
@@ -478,6 +519,31 @@ class TestParsePatterns(unittest.TestCase):
 
         result = patterns.parsePatterns(case)
         expected = {'aaa': '**{aaa}**\n',
+                    'bbb': '## {bbb}\n*{bbb}*\n',
+                    'ccc': '### {ccc}\n\n**{ccc}**\n'}
+
+        self.assertEqual(result,expected)
+
+
+
+        case = ['',
+                '',
+                '',
+                'a:',
+                '    **{a}**',
+                '',
+                'bbb:',
+                '    ## {bbb}',
+                '    *{bbb}*',
+                '',
+                'ccc:',
+                '    ### {ccc}',
+                '',
+                '    **{ccc}**',
+                '']
+
+        result = patterns.parsePatterns(case)
+        expected = {'a': '**{a}**\n',
                     'bbb': '## {bbb}\n*{bbb}*\n',
                     'ccc': '### {ccc}\n\n**{ccc}**\n'}
 

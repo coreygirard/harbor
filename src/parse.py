@@ -58,8 +58,6 @@ def parse(line,lookup,patterns):
 
     if lookup == 'p':
         return p(line)
-    elif lookup == 'otherbuiltin':
-        return line
     elif lookup in patterns.keys():
         return re.sub('{'+lookup+'}',line,patterns[lookup])
 
@@ -78,9 +76,6 @@ class Match(object):
     def getOutput(self):
         return (self.string[self.loc['{']+1:self.loc['}']],
                 self.string[self.loc['[']+1:self.loc[']']])
-
-    def __repr__(self):
-        return 'Match{0}'.format(self.getOutput())
 
 def getMacros(text,valid):
     r'''

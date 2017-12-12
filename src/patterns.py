@@ -83,6 +83,35 @@ def parsePatterns(text):
     return d
 
 def getPatterns(text):
+    r'''
+    >>> text = [['OUTLINE',
+    ...          'aaa',
+    ...          'bbb',
+    ...          'ccc',
+    ...          '',
+    ...          'PATTERNS',
+    ...          'aaa:',
+    ...          '    **{aaa}**',
+    ...          '',
+    ...          'bbb:',
+    ...          '    ## {bbb}',
+    ...          '    *{bbb}*',
+    ...          '',
+    ...          'ccc:',
+    ...          '    ### {ccc}',
+    ...          '',
+    ...          '    **{ccc}**',
+    ...          '']]
+    >>> expected = {'aaa': '**{aaa}**\n',
+    ...             'bbb': '## {bbb}\n*{bbb}*\n',
+    ...             'ccc': '### {ccc}\n\n**{ccc}**\n'}
+    >>> result = getPatterns(text)
+    >>> result == expected
+    True
+    '''
+
+
+
     patterns = [extractPatterns(f) for f in text]
     p = {}
     for f in patterns:
