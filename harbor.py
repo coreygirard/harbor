@@ -102,9 +102,13 @@ def exe(sourceFile,harborFile,debug=False,verbose=False,credit=False):
     else:
         output.toScreen(docs['final'])
 
-
 '''
-exe(['harbor.py','outline.py','patterns.py','comments.py','parse.py','output.py'],
+exe(['harbor.py',
+     'src/outline.py',
+     'src/patterns.py',
+     'src/comments.py',
+     'src/parse.py',
+     'src/output.py'],
     'harbor.harbor',
     verbose=True,
     debug=True,

@@ -98,25 +98,35 @@ def collateDocs(markup):
 
 def getComments(source):
     r"""
-    >>> source = ["",
-    ...           "'''harbor: readme",
-    ...           "aaa",
-    ...           "'''",
-    ...           "bbb",
-    ...           "'''",
-    ...           "ccc",
-    ...           "'''",
-    ...           "ddd",
-    ...           "'''harbor: readme",
-    ...           "eee",
-    ...           "fff",
-    ...           "'''"]
+    >>> source = [["",
+    ...            "'''harbor: readme",
+    ...            "aaa",
+    ...            "'''",
+    ...            "bbb",
+    ...            "'''",
+    ...            "ccc",
+    ...            "'''",
+    ...            "ddd",
+    ...            "'''harbor: readme",
+    ...            "eee",
+    ...            "fff",
+    ...            "'''"]]
     >>> getComments(source) == {'readme': 'aaa\n'
     ...                                   'eee\n'
     ...                                   'fff\n'}
     True
     """
 
-    markup = extractMarkup(source)
+    markup = []
+    for f in source:
+        markup += extractMarkup(f)
+
+    print(markup)
+
     docs = collateDocs(markup)
     return docs
+
+
+
+
+

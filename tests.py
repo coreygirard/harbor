@@ -659,7 +659,6 @@ class TestFetchFile(unittest.TestCase):
 
 
 
-"""
 class TestIntegration(unittest.TestCase):
     def setUp(self):
         self.test_dir = tempfile.mkdtemp()
@@ -711,7 +710,6 @@ class TestIntegration(unittest.TestCase):
                               ''])
 
         self.assertEqual(data,expected)
-"""
 
 
 def load_tests(loader, tests, ignore):
