@@ -83,19 +83,19 @@ class TestCollateDocs(unittest.TestCase):
 
 class TestGetComments(unittest.TestCase):
     def test_get_comments(self):
-        case = ["",
-                "'''harbor: readme",
-                "aaa",
-                "'''",
-                "bbb",
-                "'''",
-                "ccc",
-                "'''",
-                "ddd",
-                "'''harbor: readme",
-                "eee",
-                "fff",
-                "'''"]
+        case = [["",
+                 "'''harbor: readme",
+                 "aaa",
+                 "'''",
+                 "bbb",
+                 "'''",
+                 "ccc",
+                 "'''",
+                 "ddd",
+                 "'''harbor: readme",
+                 "eee",
+                 "fff",
+                 "'''"]]
 
         result = comments.getComments(case)
         expected = {'readme': 'aaa\n'

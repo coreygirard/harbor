@@ -121,8 +121,6 @@ def getComments(source):
     for f in source:
         markup += extractMarkup(f)
 
-    print(markup)
-
     docs = collateDocs(markup)
     return docs
 
