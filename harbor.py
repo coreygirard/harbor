@@ -11,12 +11,12 @@ from src import output
 
 {TODO}[section]
 
-{- [ ] Allow multiple inputs to text replacement macros}[p]
-{- [ ] Clean output to be even more human- readable/editable}[p]
-{- [ ] Handle multi-line inputs to macros}[p]
-{- [ ] REFACTOR}[p]
-{- [ ] Implement a 'trace' function to print an outline of the docs' origins (file name and line number)}[p]
-{- [ ] Experiment with supporting project languages other than Python}[p]
+- [ ] Allow multiple inputs to text replacement macros
+- [ ] Clean output to be even more human- readable/editable
+- [ ] Handle multi-line inputs to macros
+- [ ] REFACTOR
+- [ ] Implement a 'trace' function to print an outline of the docs' origins (file name and line number)
+- [ ] Experiment with supporting project languages other than Python
 '''
 
 '''harbor: readme
@@ -102,6 +102,7 @@ def exe(sourceFile,harborFile,debug=False,verbose=False,credit=False):
     else:
         output.toScreen(docs['final'])
 
+'''
 exe(['harbor.py',
      'src/outline.py',
      'src/patterns.py',
@@ -112,5 +113,4 @@ exe(['harbor.py',
     verbose=True,
     debug=False,
     credit=True)
-
-#exe('harbor.py','harbor.harbor',debug=False,verbose=True,credit=True)
+'''

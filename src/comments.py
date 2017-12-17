@@ -42,9 +42,9 @@ def extractMarkup(text):
     ...           "fff",
     ...           "'''"]
     >>> extractMarkup(source) == [Markup('readme',
-    ...                                  ['aaa']),
+    ...                                  ['aaa ']),
     ...                           Markup('readme',
-    ...                                  ['eee', 'fff'])]
+    ...                                  ['eee ', 'fff '])]
     True
     """
 
@@ -52,12 +52,14 @@ def extractMarkup(text):
     indent = None
     buff = []
     comment = None
+    i = len("'''harbor: ")
     for line in text:
-        i = len("'''harbor: ")
+        line = line + ' '
+
         if (line.lstrip())[:i] in ["'''harbor: ",'"""harbor: '] and indent == None:
             indent = len(line) - len(line.lstrip())
             comment = (line.lstrip())[:3]
-            buff = Markup(line[indent+i:],[])
+            buff = Markup(line[indent+i:].strip(),[])
         elif line.strip() == comment and indent != None:
             indent = None
             groups.append(buff)
@@ -111,9 +113,9 @@ def getComments(source):
     ...            "eee",
     ...            "fff",
     ...            "'''"]]
-    >>> getComments(source) == {'readme': 'aaa\n'
-    ...                                   'eee\n'
-    ...                                   'fff\n'}
+    >>> getComments(source) == {'readme': 'aaa \n'
+    ...                                   'eee \n'
+    ...                                   'fff \n'}
     True
     """
 
@@ -123,8 +125,3 @@ def getComments(source):
 
     docs = collateDocs(markup)
     return docs
-
-
-
-
-
