@@ -1,7 +1,4 @@
 
-
-
-
 '''harbor: readme/how/outline
 
 {
@@ -121,4 +118,3 @@ def getOutline(i):
             filenames[f] += [path]
 
     return filenames
-

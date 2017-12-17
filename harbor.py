@@ -73,6 +73,12 @@ def loadFile(filename):
 
 {How}[section]
 
+{Only one file is required to generate documentation with **Harbor**. It is a
+`.harbor` file, which specifies both the structure of the output files and any
+substitutions. For example:
+}[p]
+
+
 {Two files are required to generate documentation with **Harbor**. The first is
 a `.harbor` file, which specifies both the structure of the output files
 and any substitutions. For example:}[p]
