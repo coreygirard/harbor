@@ -11,12 +11,12 @@ from src import output
 
 {TODO}[section]
 
-{[ ] Allow multiple inputs to text replacement macros}[p]
-{[ ] Clean output to be even more human- readable/editable}[p]
-{[ ] Handle multi-line inputs to macros}[p]
-{[ ] REFACTOR}[p]
-{[ ] Implement a 'trace' function to print an outline of the docs' origins (file name and line number)}[p]
-{[ ] Experiment with supporting project languages other than Python}[p]
+{- [ ] Allow multiple inputs to text replacement macros}[p]
+{- [ ] Clean output to be even more human- readable/editable}[p]
+{- [ ] Handle multi-line inputs to macros}[p]
+{- [ ] REFACTOR}[p]
+{- [ ] Implement a 'trace' function to print an outline of the docs' origins (file name and line number)}[p]
+{- [ ] Experiment with supporting project languages other than Python}[p]
 '''
 
 '''harbor: readme
