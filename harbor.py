@@ -102,7 +102,6 @@ def exe(sourceFile,harborFile,debug=False,verbose=False,credit=False):
     else:
         output.toScreen(docs['final'])
 
-'''
 exe(['harbor.py',
      'src/outline.py',
      'src/patterns.py',
@@ -111,8 +110,7 @@ exe(['harbor.py',
      'src/output.py'],
     'harbor.harbor',
     verbose=True,
-    debug=True,
+    debug=False,
     credit=True)
-'''
 
 #exe('harbor.py','harbor.harbor',debug=False,verbose=True,credit=True)
