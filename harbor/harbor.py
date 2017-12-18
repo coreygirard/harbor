@@ -61,29 +61,22 @@ which class or function definitions a given docs section is near is far outweigh
 of potential layout options or non-standard formatting choices*}[p]
 {- **Favor clarity over speed:** *The purpose here is mainly to provide ease of use. Simple rules,
 easily remembered, beat clever tricks that squeeze a few microseconds out of compile time. At least
-in this use case. Harbor is for when you value your own time above computation time.*}[p]
+in this use case. Harbor is for when you value your own time above the computer's.*}[p]
 '''
 
 def loadFile(filename):
     with open(filename,'r') as f:
         return f.read().split('\n')
 
-
 '''harbor: readme/how/intro
 
 {How}[section]
 
-{Only one file is required to generate documentation with **Harbor**. It is a
-`.harbor` file, which specifies both the structure of the output files and any
-substitutions. For example:
-}[p]
-
-
-{Two files are required to generate documentation with **Harbor**. The first is
-a `.harbor` file, which specifies both the structure of the output files
-and any substitutions. For example:}[p]
+{Generating documentation with **Harbor** requires a single file, plus
+tagged comments in your existing source code. The file is a `.harbor`
+file, which specifies both the structure of the output file and any
+text macros to be applied to the output. An example:}[p]
 '''
-
 
 def exe(sourceFile,harborFile,debug=False,verbose=False,credit=False):
     if type(sourceFile) == type('string'):
@@ -108,7 +101,6 @@ def exe(sourceFile,harborFile,debug=False,verbose=False,credit=False):
     else:
         output.toScreen(docs['final'])
 
-'''
 exe(['harbor.py',
      'src/outline.py',
      'src/patterns.py',
@@ -117,6 +109,5 @@ exe(['harbor.py',
      'src/output.py'],
     'harbor.harbor',
     verbose=True,
-    debug=False,
+    debug=True,
     credit=True)
-'''

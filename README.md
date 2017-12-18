@@ -43,24 +43,16 @@ formatting choices*
 - **Favor clarity over speed:** *The purpose here is mainly to provide ease of
 use. Simple rules, easily remembered, beat clever tricks that squeeze a few
 microseconds out of compile time. At least in this use case. Harbor is for when
-you value your own time above computation time.* 
- 
-The second is your source file, annotated with Harbor notation: 
- 
-``` 
-''' 
-harbor: quickstart
- 
-''' 
-``` 
+you value your own time above the computer's.* 
  
  
 ### How
  
  
-Two files are required to generate documentation with **Harbor**. The first is a
-`.harbor` file, which specifies both the structure of the output files and any
-substitutions. For example: 
+Generating documentation with **Harbor** requires a single file, plus tagged
+comments in your existing source code. The file is a `.harbor` file, which
+specifies both the structure of the output file and any text macros to be
+applied to the output. An example: 
  
  
 ``` 
@@ -84,10 +76,10 @@ section:
 ```
  
  
-In the above, you can see two sections: `OUTLINE` and `PATTERNS`. They must be
-preceeded by those headers, in all-caps, and must be in that order. The
-`OUTLINE` section specifies the names of the files to be generated, and their
-internal structure. 
+The outline section of the `.harbor` file must be preceded by `OUTLINE`. This
+section specifies the names of the files to be generated, and their internal
+structure 
+ 
  
  
 Each line in the `OUTLINE` section without indentation denotes a file. The form
@@ -99,6 +91,24 @@ Basic outline indentation rules apply, with regard to how nesting works. The
 sections can have arbitrary names, excluding spaces. Best practice for
 multi-word sections is Lisp-style naming: `another-section` or
 `this-is-a-wordy-label`. 
+ 
+ 
+Once the outline is specified, comments can be written into the source code. 
+An example comment: 
+ 
+``` 
+''' 
+harbor: readme
+ 
+ 
+Markdown 
+*Markdown* 
+[link](google.com) 
+''' 
+``` 
+ 
+ 
+ 
  
  
 ### TODO

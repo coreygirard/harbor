@@ -21,9 +21,10 @@ section:
     ### {section}
 }[code]
 
-{In the above, you can see two sections: `OUTLINE` and `PATTERNS`. They must be preceeded
-by those headers, in all-caps, and must be in that order. The `OUTLINE` section specifies
-the names of the files to be generated, and their internal structure.}[p]
+{The outline section of the `.harbor` file must be preceded by `OUTLINE`.
+This section specifies the names of the files to be generated, and their internal
+structure}[p]
+
 '''
 
 def extractOutline(text):

@@ -3,14 +3,23 @@ from collections import namedtuple
 Markup = namedtuple('Markup','dest contents')
 
 
-"""harbor: readme/how
-The second is your source file, annotated with Harbor notation:
+"""harbor: readme/how/comments
+
+Once the outline is specified, comments can be written into the source code.
+An example comment:
 
 ```
 '''
-{quickstart}[harborinit]
+{readme}[harborinit]
+
+Markdown
+*Markdown*
+[link](google.com)
 '''
 ```
+
+
+
 
 """
 

@@ -1,7 +1,9 @@
 
 '''harbor: readme/how/pattern
 
-The `PATTERN` section specifies essentially macros to be executed on all generated documentation.
+{The pattern section must be preceded by `PATTERN`. This section specifies
+essentially macros to be executed on all generated documentation.}
+
 '''
 
 def extractPatterns(text):
