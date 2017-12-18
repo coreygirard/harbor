@@ -6,3 +6,5 @@ before_install:
   pip install codecov coverage
 after_success:
   codecov --token=
+notifications:
+    slack: girard-assistant:WJNGB4w80siM7XhTnzO2ECMZ
