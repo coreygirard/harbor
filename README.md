@@ -3,10 +3,7 @@
  
 *docs made simple* 
  
-[![Build Status](https://travis-ci.org/crgirard/harbor.svg?branch=master)](https://travis-ci.org/crgirard/harbor)
- 
-[![Codecov](https://img.shields.io/codecov/c/github/crgirard/harbor.svg)](https://codecov.io/gh/crgirard/harbor/)
- 
+[![Build Status](https://travis-ci.org/coreygirard/harbor.svg?branch=master)](https://travis-ci.org/coreygirard/harbor) <br>
  
 **Harbor** 
 1. *(noun)* A place of shelter 
